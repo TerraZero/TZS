@@ -1,8 +1,5 @@
 package TZ.System.Reflect.Boot;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import TZ.System.Reflect.Reflect;
 
 /**
@@ -17,32 +14,19 @@ import TZ.System.Reflect.Reflect;
  */
 @Boot(weight=1)
 public class BootFile {
+	
+	public static String getNameFromFile(String name) {
+		return name.substring(0, name.length() - 6);
+	}
 
 	protected String name;
 	protected String path;
-	protected boolean type;
-	protected Map<String, BootFile> contains;
-	protected BootFile parent;
 	protected int weight;
 	protected Reflect reflect;
 	
-	public BootFile() {
-		this.contains = new HashMap<String, BootFile>();
-	}
-	
-	public BootFile(String name, boolean type, String path) {
+	public BootFile(String name, String path) {
 		this.name = name;
-		this.type = type;
-		if (type) {
-			this.name = this.name.substring(0, this.name.length() - 6);
-		}
 		this.path = path;
-		this.contains = new HashMap<String, BootFile>();
-	}
-	
-	public void add(String name, BootFile file) {
-		this.contains.put(name, file);
-		file.parent = this;
 	}
 	
 	public String name() {
@@ -50,11 +34,7 @@ public class BootFile {
 	}
 	
 	public String fullname() {
-		if (this.isClass()) {
-			return this.name + ".class";
-		} else {
-			return this.name;
-		}
+		return this.name + ".class";
 	}
 	
 	public String file() {
@@ -68,22 +48,6 @@ public class BootFile {
 	
 	public String path() {
 		return this.path;
-	}
-	
-	public Map<String, BootFile> contains() {
-		return this.contains;
-	}
-	
-	public boolean isClass() {
-		return this.type;
-	}
-	
-	public boolean isPackage() {
-		return !this.type;
-	}
-	
-	public BootFile parent() {
-		return this.parent;
 	}
 	
 	public int weight() {

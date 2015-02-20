@@ -3,17 +3,13 @@ package TZ.System.Reflect.Boot;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.JOptionPane;
-
-import TZ.System.Base.Strings;
-import TZ.System.Reflect.Reflect;
 
 /**
  * 
@@ -30,17 +26,15 @@ public class BootLoader {
 	
 	public static void main(String[] args) {
 		BootLoader l = new BootLoader();
-		BootFile bf = l.root();
-		BootLoader.out(bf, "");
+		List<BootFile> boots = l.boots();
+		BootLoader.out(boots, "");
 		JOptionPane.showMessageDialog(null, "ende");
 	}
 	
-	public static void out(BootFile file, String tab) {
-		file.contains().forEach((s, bf) -> {
-			//test(tab + bf.file());
-			System.out.println(tab + bf.file());
-			BootLoader.out(bf, tab + "-|");
-		});
+	public static void out(List<BootFile> boots, String tab) {
+		for (BootFile boot : boots) {
+			test(tab + boot.file());
+		}
 	}
 	
 	private static String[] test;
@@ -51,7 +45,6 @@ public class BootLoader {
 			test = new String[10];
 			count = 0;
 		}
-		count++;
 		if (count == test.length) {
 			count = 0;
 			String tout = "";
@@ -60,16 +53,16 @@ public class BootLoader {
 			}
 			JOptionPane.showMessageDialog(null, tout);
 		}
-		test[count] = out;
+		test[count++] = out;
 	}
 	
-	protected BootFile root;
+	protected List<BootFile> boots;
 	
-	public BootFile root() {
-		if (this.root == null) {
+	public List<BootFile> boots() {
+		if (this.boots == null) {
 			this.init();
 		}
-		return this.root;
+		return this.boots;
 	}
 	
 	public String[] getSystemPaths() {
@@ -78,7 +71,7 @@ public class BootLoader {
 	}
 	
 	public void init() {
-		this.root = new BootFile();
+		this.boots = new ArrayList<BootFile>(1024);
 		try {
 			for (String systempath : this.getSystemPaths()) {
 				Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources(systempath);
@@ -87,10 +80,10 @@ public class BootLoader {
 					if (path.startsWith("file:")) {
 						String[] location = this.getLocation(path);
 						ZipInputStream zip = new ZipInputStream(new URL(location[1]).openStream());
-						this.loadZipItem(zip, this.root, path, systempath);
+						this.loadZipItem(zip, this.boots, systempath);
 						zip.close();
 					} else {
-						this.loadFileItem(this.root, path, systempath);
+						this.loadFileItem(this.boots, path, systempath);
 					}
 				}
 			}
@@ -99,28 +92,13 @@ public class BootLoader {
 		}
 	}
 	
-	@SuppressWarnings("resource")
-	public void loadZipItem(ZipInputStream zip, BootFile root, String path, String internpath) throws IOException {
-		// TODO
-		ZipFile zfile = new ZipFile(new File(path));
-		Enumeration<? extends ZipEntry> entries = zfile.entries();
-		int deep = 0;
-		BootFile item = root;
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
-			int entryDeep = Strings.countChar(entry.getName(), '/');
-			for (int i = deep - entryDeep; i >= 0; i--) {
-				item = item.parent();
+	public void loadZipItem(ZipInputStream zip, List<BootFile> boots, String internpath) throws IOException {
+		ZipEntry entry = null;
+		
+		while ((entry = zip.getNextEntry()) != null) {
+			if (entry.getName().endsWith(".class")) {
+				boots.add(new BootFile(this.getEntryName(entry), this.getInternpath(entry)));
 			}
-			if (entry.isDirectory()) {
-				BootFile dir = new BootFile(this.getEntryName(entry), false, this.getInternpath(entry));
-				item.add(dir.name(), dir);
-				item = dir;
-			} else {
-				BootFile file = new BootFile(this.getEntryName(entry), true, this.getInternpath(entry));
-				item.add(file.name(), file);
-			}
-			deep = entryDeep;
 		}
 	}
 	
@@ -132,7 +110,15 @@ public class BootLoader {
 		return entry.getName();
 	}
 	
-	public void loadFileItem(BootFile item, String path, String internpath) {
+	public void loadFileItem(List<BootFile> boots, String path, String internpath) {
+		for (File f : new File(path).listFiles()) {
+			if (f.isDirectory()) {
+				this.loadFileItem(boots, path + "/" + f.getName(), internpath + "/" + f.getName());
+			} else if (f.isFile() && f.getName().endsWith(".class")) {
+				boots.add(new BootFile(BootFile.getNameFromFile(f.getName()), internpath));
+			}
+		}
+		/*
 		//iterativ
 		Queue<File> dirs = new LinkedList<File>();
 		Queue<BootFile> boots = new LinkedList<BootFile>();
