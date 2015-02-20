@@ -27,11 +27,8 @@ public class BootLoader {
 	
 	public static void main(String[] args) {
 		BootLoader l = new BootLoader();
-		/*
 		BootFile bf = l.root();
 		BootLoader.out(bf, "");
-		*/
-		l.boot();
 		JOptionPane.showMessageDialog(null, "ende");
 	}
 	
