@@ -3,7 +3,11 @@ package TZ.System.Reflect.Boot;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -34,8 +38,8 @@ public class BootLoader {
 	
 	public static void out(BootFile file, String tab) {
 		file.contains().forEach((s, bf) -> {
-			test(tab + bf.file());
-			//System.out.println(tab + bf.file());
+			//test(tab + bf.file());
+			System.out.println(tab + bf.file());
 			BootLoader.out(bf, tab + "-|");
 		});
 	}
@@ -147,6 +151,30 @@ public class BootLoader {
 	}
 	
 	public void loadFileItem(BootFile item, String path, String internpath) {
+		//iterativ
+		Queue<File> dirs = new LinkedList<File>();
+		Queue<BootFile> boots = new LinkedList<BootFile>();
+	    dirs.add(new File(path));
+	    boots.add(item);
+	    String relPath = path.substring(0, path.length() - internpath.length());
+
+	    while (dirs.size() > 0) {
+	    	BootFile bf = boots.remove();
+	    	for (File file : dirs.remove().listFiles()) {
+    			String p = file.getParent().substring(relPath.length());
+	    		if (file.isDirectory()) {
+	    			dirs.add(file);
+	    			BootFile bfdir = new BootFile(file.getName(), false, p);
+	    			bf.add(bfdir.name(), bfdir);
+	    			boots.add(bfdir);
+	    		} else {
+	    			BootFile bffile = new BootFile(file.getName(), true, p);
+	    			bf.add(bffile.name(), bffile);
+	    		}
+	    	}
+	    }
+	    //*/
+	    /* recursiv
 		for (File f : new File(path).listFiles()) {
 			if (f.isDirectory()) {
 				BootFile dir = new BootFile(f.getName(), false, internpath);
@@ -157,6 +185,7 @@ public class BootLoader {
 				item.add(file.name(), file);
 			}
 		}
+		//*/
 	}
 	
 	public String[] getLocation(String dir) {
