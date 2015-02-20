@@ -3,11 +3,9 @@ package TZ.System.Reflect.Boot;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -27,6 +25,7 @@ import TZ.System.Reflect.Reflect;
  * @identifier TZ.Reflect.Boot
  *
  */
+@Boot(weight=-5)
 public class BootLoader {
 	
 	public static void main(String[] args) {
@@ -71,23 +70,6 @@ public class BootLoader {
 			this.init();
 		}
 		return this.root;
-	}
-	
-	public void boot() {
-		BootFile root = this.root();
-		this.booting(root);
-	}
-	
-	public void booting(BootFile item) {
-		if (item.isClass()) {
-			Reflect r = new Reflect(item.id());
-			if (r.hasAnnotation(Booter.class)) {
-				Booter boot = r.annotation(Booter.class);
-				System.out.println(boot.name());
-			}
-		} else {
-			item.contains().forEach((n, bf) -> this.booting(bf));
-		}
 	}
 	
 	public String[] getSystemPaths() {
@@ -174,7 +156,8 @@ public class BootLoader {
 	    	}
 	    }
 	    //*/
-	    /* recursiv
+	     /*
+	     //recursiv
 		for (File f : new File(path).listFiles()) {
 			if (f.isDirectory()) {
 				BootFile dir = new BootFile(f.getName(), false, internpath);

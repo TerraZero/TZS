@@ -3,6 +3,8 @@ package TZ.System.Reflect.Boot;
 import java.util.HashMap;
 import java.util.Map;
 
+import TZ.System.Reflect.Reflect;
+
 /**
  * 
  * @author Terra
@@ -13,6 +15,7 @@ import java.util.Map;
  * @identifier TZ.Reflect.Boot
  *
  */
+@Boot(weight=1)
 public class BootFile {
 
 	protected String name;
@@ -20,6 +23,8 @@ public class BootFile {
 	protected boolean type;
 	protected Map<String, BootFile> contains;
 	protected BootFile parent;
+	protected int weight;
+	protected Reflect reflect;
 	
 	public BootFile() {
 		this.contains = new HashMap<String, BootFile>();
@@ -79,6 +84,25 @@ public class BootFile {
 	
 	public BootFile parent() {
 		return this.parent;
+	}
+	
+	public int weight() {
+		return this.weight;
+	}
+	
+	public void weight(int weight) {
+		this.weight = weight;
+	}
+	
+	public Reflect reflect() {
+		if (this.reflect == null) {
+			this.reflect = new Reflect(this.id());
+		}
+		return this.reflect;
+	}
+	
+	public void reflect(Reflect reflect) {
+		this.reflect = reflect;
 	}
 	
 }

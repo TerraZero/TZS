@@ -17,8 +17,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Booter {
+public @interface Boot {
 
-	public String name();
+	public int weight() default 0;
 	
 }

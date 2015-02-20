@@ -33,6 +33,10 @@ public class Reflect {
 		this.reflect(reflect);
 	}
 	
+	public Class<?> reflect() {
+		return this.reflectClass;
+	}
+	
 	public Reflect reflect(String load) {
 		try {
 			this.reflectClass =  ClassLoader.getSystemClassLoader().loadClass(load);
@@ -60,6 +64,13 @@ public class Reflect {
 			throw new ReflectException(e, "instantiate", "instantiate");
 		}
 		return this;
+	}
+	
+	public <annot extends Annotation> annot getAnnotation(Class<annot> annotation) {
+		if (this.hasAnnotation(annotation)) {
+			return this.reflectClass.getAnnotation(annotation);
+		}
+		return null;
 	}
 	
 	public <annot extends Annotation> annot annotation(Class<annot> annotation) {
