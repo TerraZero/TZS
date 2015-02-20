@@ -77,9 +77,10 @@ public class BootLoader {
 				Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources(systempath);
 				while (resources.hasMoreElements()) {
 					String path = resources.nextElement().getFile();
+					
 					if (path.startsWith("file:")) {
 						String[] location = this.getLocation(path);
-						ZipInputStream zip = new ZipInputStream(new URL(location[1]).openStream());
+						ZipInputStream zip = new ZipInputStream(new URL(location[0]).openStream());
 						this.loadZipItem(zip, this.boots, systempath);
 						zip.close();
 					} else {
@@ -103,11 +104,15 @@ public class BootLoader {
 	}
 	
 	public String getEntryName(ZipEntry entry) {
-		return entry.getName();
+		String[] parts = entry.getName().split("/");
+		String name = parts[parts.length - 1];
+		return BootFile.getNameFromFile(name);
 	}
 	
 	public String getInternpath(ZipEntry entry) {
-		return entry.getName();
+		String[] parts = entry.getName().split("/");
+		
+		return entry.getName().substring(0, entry.getName().length() - parts[parts.length - 1].length() - 1);
 	}
 	
 	public void loadFileItem(List<BootFile> boots, String path, String internpath) {
@@ -157,11 +162,8 @@ public class BootLoader {
 		//*/
 	}
 	
-	public String[] getLocation(String dir) {
-		String[] location = dir.split("!");
-		
-		location[1] = location[1].substring(1);
-		return location;
+	public String[] getLocation(String path) {
+		return path.split("!");
 	}
 	
 }
