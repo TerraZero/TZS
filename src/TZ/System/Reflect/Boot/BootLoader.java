@@ -11,6 +11,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.swing.JOptionPane;
 
+import TZ.System.Boot.Boot;
+
 /**
  * 
  * @author Terra
@@ -21,18 +23,18 @@ import javax.swing.JOptionPane;
  * @identifier TZ.Reflect.Boot
  *
  */
-@Boot(weight=-5)
+@Boot
 public class BootLoader {
 	
 	public static void main(String[] args) {
 		BootLoader l = new BootLoader();
-		List<BootFile> boots = l.boots();
+		List<Module> boots = l.boots();
 		BootLoader.out(boots, "");
 		JOptionPane.showMessageDialog(null, "ende");
 	}
 	
-	public static void out(List<BootFile> boots, String tab) {
-		for (BootFile boot : boots) {
+	public static void out(List<Module> boots, String tab) {
+		for (Module boot : boots) {
 			test(tab + boot.file());
 		}
 	}
@@ -56,9 +58,9 @@ public class BootLoader {
 		test[count++] = out;
 	}
 	
-	protected List<BootFile> boots;
+	protected List<Module> boots;
 	
-	public List<BootFile> boots() {
+	public List<Module> boots() {
 		if (this.boots == null) {
 			this.init();
 		}
@@ -71,7 +73,7 @@ public class BootLoader {
 	}
 	
 	public void init() {
-		this.boots = new ArrayList<BootFile>(1024);
+		this.boots = new ArrayList<Module>(1024);
 		try {
 			for (String systempath : this.getSystemPaths()) {
 				Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources(systempath);
@@ -93,12 +95,12 @@ public class BootLoader {
 		}
 	}
 	
-	public void loadZipItem(ZipInputStream zip, List<BootFile> boots, String internpath) throws IOException {
+	public void loadZipItem(ZipInputStream zip, List<Module> boots, String internpath) throws IOException {
 		ZipEntry entry = null;
 		
 		while ((entry = zip.getNextEntry()) != null) {
 			if (entry.getName().endsWith(".class")) {
-				boots.add(new BootFile(this.getEntryName(entry), this.getInternpath(entry)));
+				boots.add(new Module(this.getEntryName(entry), this.getInternpath(entry)));
 			}
 		}
 	}
@@ -106,7 +108,7 @@ public class BootLoader {
 	public String getEntryName(ZipEntry entry) {
 		String[] parts = entry.getName().split("/");
 		String name = parts[parts.length - 1];
-		return BootFile.getNameFromFile(name);
+		return Module.getNameFromFile(name);
 	}
 	
 	public String getInternpath(ZipEntry entry) {
@@ -115,12 +117,12 @@ public class BootLoader {
 		return entry.getName().substring(0, entry.getName().length() - parts[parts.length - 1].length() - 1);
 	}
 	
-	public void loadFileItem(List<BootFile> boots, String path, String internpath) {
+	public void loadFileItem(List<Module> boots, String path, String internpath) {
 		for (File f : new File(path).listFiles()) {
 			if (f.isDirectory()) {
 				this.loadFileItem(boots, path + "/" + f.getName(), internpath + "/" + f.getName());
 			} else if (f.isFile() && f.getName().endsWith(".class")) {
-				boots.add(new BootFile(BootFile.getNameFromFile(f.getName()), internpath));
+				boots.add(new Module(Module.getNameFromFile(f.getName()), internpath));
 			}
 		}
 		/*

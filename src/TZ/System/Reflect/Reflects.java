@@ -49,8 +49,7 @@ public class Reflects {
 		return true;
 	}
 
-	public static Object[] getParameter(Object[] parameters,
-			Class<?>[] definition, boolean vararg) {
+	public static Object[] getParameter(Object[] parameters, Class<?>[] definition, boolean vararg) {
 		if (vararg) {
 			Object[] paras = new Object[definition.length];
 			Object[] vars = null;
@@ -85,6 +84,15 @@ public class Reflects {
 		}
 		return search;
 	}
+	
+	public static Method getFunctions(Class<?> reflect, String name, Class<?>[] parameters) {
+		for (Method method : reflect.getMethods()) {
+			if (method.getName().equals(name) && Reflects.isParameter(parameters, method.getParameterTypes(), method.isVarArgs())) {
+				return method;
+			}
+		}
+		return null;
+	}
 
 	public static Field getField(Class<?> base, String name) {
 		Field[] fields = base.getFields();
@@ -96,8 +104,7 @@ public class Reflects {
 		return null;
 	}
 
-	public static Constructor<?> getConstructor(Class<?> base,
-			Class<?>[] parameters) {
+	public static Constructor<?> getConstructor(Class<?> base, Class<?>[] parameters) {
 		Constructor<?>[] constructors = base.getConstructors();
 		for (int i = 0; i < constructors.length; i++) {
 			if (Reflects.isParameter(parameters,

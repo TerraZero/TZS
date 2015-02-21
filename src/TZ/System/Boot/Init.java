@@ -1,4 +1,4 @@
-package TZ.System.Reflect.Boot;
+package TZ.System.Boot;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,17 +8,17 @@ import java.lang.annotation.Target;
 /**
  * 
  * @author Terra
- * @created 19.02.2015
+ * @created 21.02.2015
  * 
- * @file Booter.java
- * @project G7C
- * @identifier TZ.Reflect.Boot
+ * @file Init.java
+ * @project TZS
+ * @identifier TZ.System.Boot
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Boot {
+public @interface Init {
 
-	public int weight() default 0;
+	public String function() default "sysInit";
 	
 }

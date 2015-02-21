@@ -3,6 +3,7 @@ package TZ.System.Reflect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import TZ.System.Reflect.Exception.ReflectException;
 
@@ -39,9 +40,9 @@ public class Reflect {
 	
 	public Reflect reflect(String load) {
 		try {
-			this.reflectClass =  ClassLoader.getSystemClassLoader().loadClass(load);
+			this.reflectClass = ClassLoader.getSystemClassLoader().loadClass(load);
 		} catch (ClassNotFoundException e) {
-			throw new ReflectException(e, "", "");
+			throw new ReflectException(e, "reflect", "reflect");
 		}
 		return this;
 	}
@@ -65,6 +66,40 @@ public class Reflect {
 		}
 		return this;
 	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	public<type> type call(String function, Object... parameters) {
+		try {
+			Method method = Reflects.getFunctions(this.reflectClass, function, Reflects.extractClasses(parameters));
+			return (type)method.invoke(this.reflect, parameters);
+		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			throw new ReflectException(e, "call", "call");
+		}
+	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	public<type> type get(String field) {
+		try {
+			return (type)this.reflectClass.getField(field).get(this.reflect);
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			throw new ReflectException(e, "get", "get");
+		}
+	}
+	
+	public Reflect set(String field, Object set) {
+		try {
+			this.reflectClass.getField(field).set(this.reflect, set);
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			throw new ReflectException(e, "set", "set");
+		}
+		return this;
+	}
+	
+	
 	
 	public <annot extends Annotation> annot getAnnotation(Class<annot> annotation) {
 		if (this.hasAnnotation(annotation)) {

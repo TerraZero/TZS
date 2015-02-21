@@ -12,8 +12,7 @@ import TZ.System.Reflect.Reflect;
  * @identifier TZ.Reflect.Boot
  *
  */
-@Boot(weight=1)
-public class BootFile {
+public class Module {
 	
 	public static String getNameFromFile(String name) {
 		return name.substring(0, name.length() - 6);
@@ -24,7 +23,7 @@ public class BootFile {
 	protected int weight;
 	protected Reflect reflect;
 	
-	public BootFile(String name, String path) {
+	public Module(String name, String path) {
 		this.name = name;
 		this.path = path;
 	}
