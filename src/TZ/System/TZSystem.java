@@ -1,6 +1,7 @@
 package TZ.System;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ public class TZSystem {
 	
 	public static void main(String[] args) {
 		TZSystem.execute();
-		TZSystem.exit(5);
 	}
 	
 	private static TZSystem system;
@@ -74,7 +74,7 @@ public class TZSystem {
 				this.modules.add(boot);
 			}
 		}
-		// TODO sort modules by boot.weight()
+		Collections.sort(this.modules, (m1, m2) -> m1.weight() - m2.weight());
 	}
 	
 	public void sysBoot() {
@@ -105,7 +105,7 @@ public class TZSystem {
 	}
 	
 	public void sysIniting() {
-		for (Module module : this.register.get(Boot.class)) {
+		for (Module module : this.register.get(Init.class)) {
 			Init info = module.reflect().annotation(Init.class);
 			module.reflect().call(info.function(), module, this.modules);
 		}
