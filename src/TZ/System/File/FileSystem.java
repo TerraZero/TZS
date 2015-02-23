@@ -9,6 +9,8 @@ import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Annotations.Functions.InitFunction;
+import TZ.System.Handler.Handler;
+import TZ.System.Handler.Listener.ArgsListener;
 import TZ.System.Reflect.Args;
 import TZ.System.Reflect.Boot.Module;
 
@@ -23,11 +25,13 @@ import TZ.System.Reflect.Boot.Module;
  *
  */
 @Info
-public class FileSystem {
+public class FileSystem implements ArgsListener {
 	
-	// TODO
-	// .replace("~", System.getProperty("user.home"));
-	// as alter function
+	public static void main(String[] args) {
+		TZSystem.execute();
+		Fid fid = FileSystem.get("test.csv", "~");
+		System.out.println(fid.getPath());
+	}
 	
 	private static FileSystem filesystem;
 	
@@ -51,9 +55,12 @@ public class FileSystem {
 	}
 	
 	protected List<String> systemPaths;
+	protected Handler<ArgsListener, Args> replacers;
 	
 	public FileSystem() {
 		this.systemPaths = new ArrayList<String>(16);
+		this.replacers = new Handler<ArgsListener, Args>((l, e) -> l.fire(e));
+		this.replacers.add(this);
 	}
 
 	public Fid fsGet(String name, String... dirs) {
@@ -85,14 +92,20 @@ public class FileSystem {
 	
 	public String fsReplace(String str) {
 		Args args = new Args(str);
-		TZSystem.invoke("token-path", args);
+		this.replacers.fire(args);
 		return args.dataString;
 	}
 	
-	public static void main(String[] args) {
-		TZSystem.execute();
-		Fid fid = FileSystem.get("test.csv", "~");
-		System.out.println(fid.getPath());
+	public Handler<ArgsListener, Args> getReplacer() {
+		return this.replacers;
+	}
+
+	/* 
+	 * @see TZ.System.Handler.Listener.ArgsListener#fire(TZ.System.Reflect.Args)
+	 */
+	@Override
+	public void fire(Args args) {
+		args.dataString = args.dataString.replace("~", System.getProperty("user.home"));
 	}
 	
 }
