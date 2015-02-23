@@ -110,8 +110,8 @@ public class Cache<type> {
 	}
 	
 	public type cache(String name, type data) {
-		System.out.println("cache: " + name);
-		return this.cache.put(name, data);
+		this.cache.put(name, data);
+		return data;
 	}
 	
 	public void clear() {

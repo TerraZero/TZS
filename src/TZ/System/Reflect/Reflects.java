@@ -1,5 +1,6 @@
 package TZ.System.Reflect;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -7,6 +8,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import TZ.System.Annotations.Functions.InvokeFunction;
+import TZ.System.Base.Strings;
 
 /**
  * 
@@ -77,6 +81,7 @@ public class Reflects {
 	public static List<Method> searchFunctions(Class<?> base, String name) {
 		List<Method> search = new ArrayList<Method>();
 		Method[] methods = base.getMethods();
+		
 		for (int i = 0; i < methods.length; i++) {
 			if (methods[i].getName().equals(name)) {
 				search.add(methods[i]);
@@ -92,6 +97,18 @@ public class Reflects {
 			}
 		}
 		return null;
+	}
+	
+	public static List<Method> getFunctions(Class<?> reflect, Class<? extends Annotation> annotation) {
+		List<Method> functions = new ArrayList<Method>(16);
+		Method[] methods = reflect.getMethods();
+		
+		for (Method method : methods) {
+			if (method.isAnnotationPresent(annotation)) {
+				functions.add(method);
+			}
+		}
+		return functions;
 	}
 
 	public static Field getField(Class<?> base, String name) {
@@ -165,6 +182,33 @@ public class Reflects {
 		} else {
 			return null;
 		}
+	}
+	
+	public static CallState getCallState(Reflect reflect, Class<? extends Annotation> annotation) {
+		List<Method> callmethods = new ArrayList<Method>(8);
+		Method[] methods = reflect.reflect().getMethods();
+		
+		for (Method method : methods) {
+			if (method.isAnnotationPresent(annotation)) {
+				callmethods.add(method);
+			}
+		}
+		return new CallState(reflect, callmethods);
+	}
+	
+	public static CallState getInvoke(Reflect reflect, String function) {
+		List<Method> callmethods = new ArrayList<Method>(8);
+		Method[] methods = reflect.reflect().getMethods();
+		
+		for (Method method : methods) {
+			if (method.isAnnotationPresent(InvokeFunction.class)) {
+				InvokeFunction invoke = method.getAnnotation(InvokeFunction.class);
+				if (Strings.isIntern(function, invoke.functions())) {
+					callmethods.add(method);
+				}
+			}
+		}
+		return new CallState(reflect, callmethods);
 	}
 
 }

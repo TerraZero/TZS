@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import TZ.System.Reflect.Exception.ReflectException;
 
@@ -36,6 +37,10 @@ public class Reflect {
 	
 	public Class<?> reflect() {
 		return this.reflectClass;
+	}
+	
+	public Object getReflect() {
+		return this.reflect;
 	}
 	
 	public Reflect reflect(String load) {
@@ -76,6 +81,20 @@ public class Reflect {
 			return (type)method.invoke(this.reflect, parameters);
 		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new ReflectException(e, "call", "call");
+		}
+	}
+	
+	public void call(Class<? extends Annotation> annotation, Object... parameters) {
+		List<Method> functions = Reflects.getFunctions(this.reflectClass, annotation);
+		
+		if (!functions.isEmpty()) {
+			for (Method function : functions) {
+				try {
+					function.invoke(this.reflect, parameters);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					throw new ReflectException(e, "call", "call");
+				}
+			}
 		}
 	}
 	

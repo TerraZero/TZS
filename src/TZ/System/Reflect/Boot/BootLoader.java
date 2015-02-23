@@ -11,8 +11,6 @@ import java.util.zip.ZipInputStream;
 
 import javax.swing.JOptionPane;
 
-import TZ.System.Boot.Boot;
-
 /**
  * 
  * @author Terra
@@ -23,7 +21,6 @@ import TZ.System.Boot.Boot;
  * @identifier TZ.Reflect.Boot
  *
  */
-@Boot
 public class BootLoader {
 	
 	public static void main(String[] args) {

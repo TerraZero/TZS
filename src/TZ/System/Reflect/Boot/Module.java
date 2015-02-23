@@ -1,5 +1,6 @@
 package TZ.System.Reflect.Boot;
 
+import TZ.System.Lists.Weighted;
 import TZ.System.Reflect.Reflect;
 
 /**
@@ -12,7 +13,7 @@ import TZ.System.Reflect.Reflect;
  * @identifier TZ.Reflect.Boot
  *
  */
-public class Module {
+public class Module implements Weighted {
 	
 	public static String getNameFromFile(String name) {
 		return name.substring(0, name.length() - 6);

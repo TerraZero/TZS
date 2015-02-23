@@ -1,15 +1,16 @@
 package TZ.System;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import TZ.System.Boot.Boot;
-import TZ.System.Boot.Exit;
-import TZ.System.Boot.Init;
-import TZ.System.Boot.Info;
+import TZ.System.Annotations.Info;
+import TZ.System.Annotations.Functions.BootFunction;
+import TZ.System.Annotations.Functions.ExitFunction;
+import TZ.System.Annotations.Functions.InitFunction;
+import TZ.System.Cache.Cache;
+import TZ.System.Lists.Lists;
+import TZ.System.Reflect.CallState;
+import TZ.System.Reflect.Reflects;
 import TZ.System.Reflect.Boot.Module;
 import TZ.System.Reflect.Boot.BootLoader;
 
@@ -24,6 +25,10 @@ import TZ.System.Reflect.Boot.BootLoader;
  *
  */
 public class TZSystem {
+	
+	public static final String BOOT_ID = "boot";
+	public static final String INIT_ID = "init";
+	public static final String EXIT_ID = "exit";
 	
 	public static void main(String[] args) {
 		TZSystem.execute();
@@ -50,88 +55,94 @@ public class TZSystem {
 		TZSystem.getSystem().sysExit(code);
 	}
 	
+
+	
+	public static void invoke(String function, Object... parameters) {
+		TZSystem.getSystem().sysInvoke(function, parameters);
+	}
+	
+	protected List<Module> classes;
 	protected List<Module> modules;
-	protected Map<Class<?>, List<Module>> register;
+	protected Cache<List<CallState>> invokes;
+	
+	public TZSystem() {
+		this.invokes = new Cache<List<CallState>>("system-invoke");
+	}
 	
 	public void sysExecute() {
-		this.modules = new ArrayList<Module>(512);
-		this.register = new HashMap<Class<?>, List<Module>>();
-		
+		this.bootStep("Loading Modules");
 		this.sysModules();
-		this.sysBoot();
+		this.bootStep("Booting Modules");
 		this.sysBooting();
-		this.sysInit();
+		this.bootStep("Initiating Modules");
 		this.sysIniting();
 	}
 	
 	public void sysModules() {
-		List<Module> boots = new BootLoader().boots();
+		this.modules = new ArrayList<Module>(512);
+		this.classes = new BootLoader().boots();
 		
-		for (Module boot : boots) {
-			Info info = boot.reflect().getAnnotation(Info.class);
+		for (Module classe : classes) {
+			Info info = classe.reflect().getAnnotation(Info.class);
 			if (info != null) {
-				boot.weight(info.weight());
-				this.modules.add(boot);
+				classe.weight(info.weight());
+				this.modules.add(classe);
 			}
 		}
-		Collections.sort(this.modules, (m1, m2) -> m1.weight() - m2.weight());
-	}
-	
-	public void sysBoot() {
-		List<Module> list = new ArrayList<Module>(128);
-		this.register.put(Boot.class, list);
-		
-		for (Module module : this.modules) {
-			Boot info = module.reflect().getAnnotation(Boot.class);
-			if (info != null) list.add(module);
-		}
+		Lists.sortASC(this.modules);
+		this.develOut(this.modules);
 	}
 	
 	public void sysBooting() {
-		for (Module module : this.register.get(Boot.class)) {
-			Boot info = module.reflect().annotation(Boot.class);
-			module.reflect().call(info.function(), module, this.modules);
-		}
-	}
-	
-	public void sysInit() {
-		List<Module> list = new ArrayList<Module>(128);
-		this.register.put(Init.class, list);
-		
 		for (Module module : this.modules) {
-			Init info = module.reflect().getAnnotation(Init.class);
-			if (info != null) list.add(module);
+			module.reflect().call(BootFunction.class, TZSystem.BOOT_ID, module, this.classes);
 		}
 	}
 	
 	public void sysIniting() {
-		for (Module module : this.register.get(Init.class)) {
-			Init info = module.reflect().annotation(Init.class);
-			module.reflect().call(info.function(), module, this.modules);
+		for (Module module : this.modules) {
+			module.reflect().call(InitFunction.class, TZSystem.INIT_ID, module, this.classes);
 		}
 	}
 	
 	public void sysExit(int code) {
-		List<Module> list = new ArrayList<Module>(128);
-		this.register.put(Exit.class, list);
-		
-		for (Module module : this.modules) {
-			Exit info = module.reflect().getAnnotation(Exit.class);
-			if (info != null) list.add(module);
-		}
 		this.sysExiting(code);
 		System.exit(code);
 	}
 	
 	public void sysExiting(int code) {
-		for (Module module : this.register.get(Exit.class)) {
-			Exit info = module.reflect().annotation(Exit.class);
-			module.reflect().call(info.function(), module, this.modules, code);
+		for (Module module : this.modules) {
+			module.reflect().call(ExitFunction.class, TZSystem.EXIT_ID, module, this.classes);
 		}
 	}
 	
 	public void sysOut(String out) {
 		System.out.println(out);
+	}
+	
+	public void bootStep(String step) {
+		this.sysOut(step + "...");
+	}
+	
+	public void develOut(List<Module> modules) {
+		for (Module module : modules) {
+			this.sysOut(module.name());
+		}
+	}
+	
+	public void sysInvoke(String function, Object... parameters) {
+		List<CallState> invokes = this.invokes.get(function);
+		if (invokes == null) {
+			invokes = new ArrayList<CallState>(8);
+			for (Module module : this.modules) {
+				CallState call = Reflects.getInvoke(module.reflect(), function);
+				if (call.length() != 0) invokes.add(call);
+			}
+			this.invokes.cache(function, invokes);
+		}
+		for (CallState call : invokes) {
+			call.call(parameters);
+		}
 	}
 	
 }
