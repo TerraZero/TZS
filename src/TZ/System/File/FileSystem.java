@@ -48,6 +48,16 @@ public class FileSystem {
 		return FileSystem.filesystem.fsGet(context, name, dir);
 	}
 	
+	public static Fid getExist(String context, String name) {
+		return FileSystem.get(context, name, null);
+	}
+	
+	public static Fid getExist(String context, String name, String dir) {
+		Fid fid = FileSystem.get(context, name, dir);
+		if (fid.isExist()) return fid;
+		return null;
+	}
+	
 	protected Tokens systemtokens;
 	protected Tokens contexttokens;
 	

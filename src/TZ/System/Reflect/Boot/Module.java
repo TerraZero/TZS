@@ -1,5 +1,9 @@
 package TZ.System.Reflect.Boot;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+
 import TZ.System.Lists.Weighted;
 import TZ.System.Reflect.Reflect;
 
@@ -17,6 +21,18 @@ public class Module implements Weighted {
 	
 	public static String getNameFromFile(String name) {
 		return name.substring(0, name.length() - 6);
+	}
+	
+	public static List<Module> getAnnotation(List<Module> modules, Class<? extends Annotation> annotation) {
+		List<Module> moduleAnnots = new ArrayList<Module>(16);
+		
+		for (Module module : modules) {
+			Annotation annot = module.reflect().getAnnotation(annotation);
+			if (annot != null) {
+				moduleAnnots.add(module);
+			}
+		}
+		return moduleAnnots;
 	}
 
 	protected String name;

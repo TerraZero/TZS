@@ -26,30 +26,32 @@ public class Mechnic {
 	@BootFunction
 	public static void bootMechnic(String id, Module module, List<Module> classes) {
 		Mechnic.mechnic = new Mechnic();
-	}
-	
-	public static void register(MechnicCreator<?> mechnic) {
-		Mechnic.mechnic.mechnicRegister(mechnic);
+		
+		List<Module> mechnics = Module.getAnnotation(classes, Mech.class);
+		
+		for (Module mechnic : mechnics) {
+			Mech mech = mechnic.reflect().annotation(Mech.class);
+			Mechnic.mechnic.mechnicRegister(mech.mechnic(), mechnic);
+		}
 	}
 	
 	public static<type> type get(String name, Object... args) {
 		return Mechnic.mechnic.mechnicGet(name, args);
 	}
 
-	protected Map<String, MechnicCreator<?>> mechnics;
+	protected Map<String, Module> mechnics;
 	
 	public Mechnic() {
-		this.mechnics = new HashMap<String, MechnicCreator<?>>();
+		this.mechnics = new HashMap<String, Module>();
 	}
 	
-	protected void mechnicRegister(MechnicCreator<?> mechnic) {
-		this.mechnics.put(mechnic.mechnicName(), mechnic);
+	protected void mechnicRegister(String name, Module module) {
+		this.mechnics.put(name, module);
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected<type> type mechnicGet(String name, Object... args) {
-		MechnicCreator<?> mc = this.mechnics.get(name);
-		return (type)mc.mechnic(args);
+		Module module = this.mechnics.get(name);
+		return module.reflect().call("mechnic", args);
 	}
 	
 }

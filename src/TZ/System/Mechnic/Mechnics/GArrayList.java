@@ -2,7 +2,7 @@ package TZ.System.Mechnic.Mechnics;
 
 import java.util.ArrayList;
 
-import TZ.System.Mechnic.MechnicCreator;
+import TZ.System.Mechnic.Mech;
 
 /**
  * 
@@ -14,21 +14,10 @@ import TZ.System.Mechnic.MechnicCreator;
  * @identifier TZ.Mechnic.Mechnics
  *
  */
-public class GArrayList implements MechnicCreator<ArrayList<?>> {
+@Mech(name = "arraylist", mechnic = "list")
+public class GArrayList {
 
-	/* 
-	 * @see TZ.Mechnic.MechnicClass#mechnicName()
-	 */
-	@Override
-	public String mechnicName() {
-		return "list";
-	}
-
-	/* 
-	 * @see TZ.Mechnic.MechnicClass#mechnic(java.lang.Object[])
-	 */
-	@Override
-	public ArrayList<?> mechnic(Object... args) {
+	public static ArrayList<?> mechnic(Object... args) {
 		ArrayList<Object> create = new ArrayList<Object>();
 		if (args.length != 0) {
 			for (Object o : args) {
