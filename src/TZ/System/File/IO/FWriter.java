@@ -34,7 +34,7 @@ public class FWriter {
 	
 	public FWriter writeAll(List<String> lines) {
 		try {
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.fid.getPath().toFile()), Charset.defaultCharset()));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.fid.path().toFile()), Charset.defaultCharset()));
 			for (String line : lines) {
 				this.writeLine(writer, line);
 			}

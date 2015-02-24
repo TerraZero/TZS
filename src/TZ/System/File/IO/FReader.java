@@ -33,7 +33,7 @@ public class FReader {
 	}
 	
 	public List<String> readAll() {
-		try (Stream<String> stream = Files.lines(this.fid.getPath(), Charset.defaultCharset())) {
+		try (Stream<String> stream = Files.lines(this.fid.path(), Charset.defaultCharset())) {
 			return stream.collect(Collectors.toList());
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -1,17 +1,13 @@
 package TZ.System.File;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
-import TZ.System.Annotations.Functions.InitFunction;
-import TZ.System.Handler.Handler;
-import TZ.System.Handler.Listener.ArgsListener;
-import TZ.System.Reflect.Args;
+import TZ.System.Base.Tokens;
 import TZ.System.Reflect.Boot.Module;
 
 /**
@@ -25,12 +21,16 @@ import TZ.System.Reflect.Boot.Module;
  *
  */
 @Info
-public class FileSystem implements ArgsListener {
+public class FileSystem {
+	
+	public static final String DEFAULT_SYSTEM_TOKEN = "[default]";
+	public static final String DEFAULT_CONTEXT_TOKEN = "[default]";
 	
 	public static void main(String[] args) {
-		TZSystem.execute();
-		Fid fid = FileSystem.get("test.csv", "~");
-		System.out.println(fid.getPath());
+		TZSystem.execute("TestProgram");
+		Fid fid = FileSystem.get("[default]", "test");
+		System.out.println(fid.file());
+		System.out.println(fid.context());
 	}
 	
 	private static FileSystem filesystem;
@@ -40,72 +40,62 @@ public class FileSystem implements ArgsListener {
 		FileSystem.filesystem = new FileSystem();
 	}
 	
-	@InitFunction
-	public static void initFileSystem(String id, Module module, List<Module> classes) {
-		FileSystem.addSystemPath("~");
-		// TODO init system paths
+	public static Fid get(String context, String name) {
+		return FileSystem.filesystem.fsGet(context, name, null);
 	}
 	
-	public static Fid get(String name, String... dirs) {
-		return FileSystem.filesystem.fsGet(name, dirs);
+	public static Fid get(String context, String name, String dir) {
+		return FileSystem.filesystem.fsGet(context, name, dir);
 	}
 	
-	public static void addSystemPath(String path) {
-		FileSystem.filesystem.fsAddSystemPath(path);
-	}
-	
-	protected List<String> systemPaths;
-	protected Handler<ArgsListener, Args> replacers;
+	protected Tokens systemtokens;
+	protected Tokens contexttokens;
 	
 	public FileSystem() {
-		this.systemPaths = new ArrayList<String>(16);
-		this.replacers = new Handler<ArgsListener, Args>((l, e) -> l.fire(e));
-		this.replacers.add(this);
+		this.systemtokens = new Tokens();
+		this.contexttokens = new Tokens();
+		
+		this.fsAddSystemToken(false, new File(TZSystem.program()).getAbsolutePath(), FileSystem.DEFAULT_SYSTEM_TOKEN);
+		this.fsAddSystemToken(System.getProperty("user.home"), "user");
+		this.fsAddSystemToken(false, System.getProperty("user.home"), "~");
+		
+		this.fsAddContextToken(false, "default", FileSystem.DEFAULT_CONTEXT_TOKEN);
 	}
-
-	public Fid fsGet(String name, String... dirs) {
-		Fid file = new Fid(this.fsGetPath(name));
-		if (file.isExist()) return file;
-		if (dirs.length == 0) {
-			for (String sp : this.systemPaths) {
-				Fid fid = new Fid(this.fsGetPath(sp, name));
-				if (fid.isExist()) return fid;
-			}
+	
+	public Fid fsGet(String context, String name, String dir) {
+		return new Fid(Paths.get(this.fsGetDirToken(dir), this.fsGetContextToken(context), name), context, name, dir);
+	}
+	
+	public String fsGetContextToken(String context) {
+		if (context == null) {
+			return this.contexttokens.token(FileSystem.DEFAULT_CONTEXT_TOKEN);
 		} else {
-			for (String dir : dirs) {
-				Fid fid = new Fid(this.fsGetPath(dir, name));
-				if (fid.isExist()) return fid;
-			}
+			return this.contexttokens.token(context);
 		}
-		return null;
 	}
 	
-	public void fsAddSystemPath(String path) {
-		this.systemPaths.add(path);
+	public String fsGetDirToken(String dir) {
+		if (dir == null) {
+			return this.systemtokens.token(FileSystem.DEFAULT_SYSTEM_TOKEN);
+		} else {
+			return this.systemtokens.token(dir);
+		}
 	}
 	
-	public Path fsGetPath(String first, String... more) {
-		first = this.fsReplace(first);
-		for (int i = 0; i < more.length; i++) more[i] = this.fsReplace(more[i]);
-		return Paths.get(first, more);
+	public void fsAddSystemToken(boolean wrapper, String replace, String... tokens) {
+		this.systemtokens.addToken(wrapper, replace, tokens);
 	}
 	
-	public String fsReplace(String str) {
-		Args args = new Args(str);
-		this.replacers.fire(args);
-		return args.dataString;
+	public void fsAddSystemToken(String replace, String... tokens) {
+		this.systemtokens.addToken(replace, tokens);
 	}
 	
-	public Handler<ArgsListener, Args> getReplacer() {
-		return this.replacers;
+	public void fsAddContextToken(boolean wrapper, String replace, String... tokens) {
+		this.contexttokens.addToken(wrapper, replace, tokens);
 	}
-
-	/* 
-	 * @see TZ.System.Handler.Listener.ArgsListener#fire(TZ.System.Reflect.Args)
-	 */
-	@Override
-	public void fire(Args args) {
-		args.dataString = args.dataString.replace("~", System.getProperty("user.home"));
+	
+	public void fsAddContextToken(String replace, String... tokens) {
+		this.contexttokens.addToken(replace, tokens);
 	}
 	
 }

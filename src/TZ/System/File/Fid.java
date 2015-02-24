@@ -18,6 +18,11 @@ import java.nio.file.Paths;
 public class Fid {
 
 	protected Path path;
+	protected File file;
+	
+	protected String name;
+	protected String context;
+	protected String dir;
 	
 	public Fid(String file) {
 		this(new File(file));
@@ -33,10 +38,36 @@ public class Fid {
 	
 	public Fid(Path path) {
 		this.path = path;
+		this.file = path.toFile();
 	}
 	
-	public Path getPath() {
+	// for filesystem
+	public Fid(Path path, String context, String name, String dir) {
+		this.path = path;
+		this.file = path.toFile();
+		this.context = context;
+		this.name = name;
+		this.dir = dir;
+	}
+	
+	public Path path() {
 		return this.path;
+	}
+	
+	public File file() {
+		return this.file;
+	}
+	
+	public String name() {
+		return this.name;
+	}
+	
+	public String context() {
+		return this.context;
+	}
+	
+	public String dir() {
+		return this.dir;
 	}
 	
 	public boolean isExist() {

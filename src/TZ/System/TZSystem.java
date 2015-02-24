@@ -31,7 +31,7 @@ public class TZSystem {
 	public static final String EXIT_ID = "exit";
 	
 	public static void main(String[] args) {
-		TZSystem.execute();
+		TZSystem.execute("test");
 	}
 	
 	private static TZSystem system;
@@ -43,8 +43,8 @@ public class TZSystem {
 		return TZSystem.system;
 	}
 
-	public static void execute() {
-		TZSystem.getSystem().sysExecute();
+	public static void execute(String programm) {
+		TZSystem.getSystem().sysExecute(programm);
 	}
 	
 	public static void out(String out) {
@@ -53,6 +53,10 @@ public class TZSystem {
 	
 	public static void exit(int code) {
 		TZSystem.getSystem().sysExit(code);
+	}
+	
+	public static String program() {
+		return TZSystem.getSystem().fsProgram();
 	}
 	
 
@@ -64,12 +68,15 @@ public class TZSystem {
 	protected List<Module> classes;
 	protected List<Module> modules;
 	protected Cache<List<CallState>> invokes;
+	protected String program;
 	
 	public TZSystem() {
 		this.invokes = new Cache<List<CallState>>("system-invoke");
 	}
 	
-	public void sysExecute() {
+	public void sysExecute(String program) {
+		this.program = program;
+		
 		this.bootStep("Loading Modules");
 		this.sysModules();
 		this.bootStep("Booting Modules");
@@ -143,6 +150,10 @@ public class TZSystem {
 		for (CallState call : invokes) {
 			call.call(parameters);
 		}
+	}
+	
+	public String fsProgram() {
+		return this.program;
 	}
 	
 }

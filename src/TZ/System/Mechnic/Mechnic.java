@@ -1,7 +1,12 @@
 package TZ.System.Mechnic;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import TZ.System.Annotations.Info;
+import TZ.System.Annotations.Functions.BootFunction;
+import TZ.System.Reflect.Boot.Module;
 
 /**
  * 
@@ -13,21 +18,22 @@ import java.util.Map;
  * @identifier TZ.Mechnic
  *
  */
+@Info(weight = -1000)
 public class Mechnic {
 	
-	private static Mechnic singleton;
+	private static Mechnic mechnic;
 	
-	static {
-		Mechnic.singleton = new Mechnic();
-		// TODO
+	@BootFunction
+	public static void bootMechnic(String id, Module module, List<Module> classes) {
+		Mechnic.mechnic = new Mechnic();
 	}
 	
 	public static void register(MechnicCreator<?> mechnic) {
-		Mechnic.singleton.mechnicRegister(mechnic);
+		Mechnic.mechnic.mechnicRegister(mechnic);
 	}
 	
 	public static<type> type get(String name, Object... args) {
-		return Mechnic.singleton.mechnicGet(name, args);
+		return Mechnic.mechnic.mechnicGet(name, args);
 	}
 
 	protected Map<String, MechnicCreator<?>> mechnics;
