@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Reflect.Boot.Module;
@@ -22,12 +21,6 @@ import TZ.System.Reflect.Boot.Module;
 @Info(weight = -1000)
 public class Mechnic {
 	
-	public static void main(String[] args) {
-		TZSystem.execute("test");
-		//List<String> test = Mechnic.get("list");
-		//System.out.println(test);
-	}
-	
 	private static Mechnic mechnic;
 	
 	@BootFunction
@@ -35,7 +28,8 @@ public class Mechnic {
 		Mechnic.mechnic = new Mechnic();
 		
 		Module.forAnnotation(classes, Mech.class, (m, a) -> {
-			Mechnic.mechnic.mechnicRegister(a.mechnic(), (MechnicCreator<?>)m.reflect().instantiate());
+			m.reflect().instantiate();
+			Mechnic.mechnic.mechnicRegister(a.mechnic(), m.reflect().getReflect());
 		});
 	}
 	

@@ -39,8 +39,9 @@ public class Reflect {
 		return this.reflectClass;
 	}
 	
-	public Object getReflect() {
-		return this.reflect;
+	@SuppressWarnings("unchecked")
+	public<type> type getReflect() {
+		return (type)this.reflect;
 	}
 	
 	public Reflect reflect(String load) {
@@ -59,15 +60,17 @@ public class Reflect {
 	}
 	
 	public Reflect instantiate(Object... args) {
-		try {
-			if (args.length == 0) {
-				this.reflect = this.reflectClass.newInstance();
-			} else {
-				Constructor<?> c = Reflects.getConstructor(this.reflectClass, Reflects.extractClasses(args));
-				this.reflect = c.newInstance(Reflects.getParameter(args, c.getParameterTypes(), c.isVarArgs()));
+		if (this.reflect == null) {
+			try {
+				if (args.length == 0) {
+					this.reflect = this.reflectClass.newInstance();
+				} else {
+					Constructor<?> c = Reflects.getConstructor(this.reflectClass, Reflects.extractClasses(args));
+					this.reflect = c.newInstance(Reflects.getParameter(args, c.getParameterTypes(), c.isVarArgs()));
+				}
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new ReflectException(e, "instantiate", "instantiate");
 			}
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw new ReflectException(e, "instantiate", "instantiate");
 		}
 		return this;
 	}
@@ -90,7 +93,6 @@ public class Reflect {
 		if (!functions.isEmpty()) {
 			for (Method function : functions) {
 				try {
-					System.out.println(function);
 					function.invoke(this.reflect, parameters);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					throw new ReflectException(e, "call", "call");

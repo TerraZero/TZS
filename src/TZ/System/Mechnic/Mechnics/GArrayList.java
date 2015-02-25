@@ -21,17 +21,16 @@ public class GArrayList implements MechnicCreator<ArrayList<?>> {
 	@Override
 	public ArrayList<?> mechnic(Object[] args) {
 		ArrayList<Object> create = null;
+		int i = 0;
 		
 		if (args.length > 0 && args[0].getClass() == Integer.class) {
-			System.out.println("length: " + args[0]);
 			create = new ArrayList<Object>((int)args[0]);
+			i = 1;
 		} else {
 			create = new ArrayList<Object>();
 		}
-		if (args.length != 0) {
-			for (Object o : args) {
-				create.add(o);
-			}
+		for (; i < args.length; i++) {
+			create.add(args[i]);
 		}
 		return create;
 	}

@@ -14,6 +14,21 @@ import java.util.Map;
  *
  */
 public class Tokens {
+	
+	public static String buildToken(String... tokens) {
+		return Tokens.buildToken(true, tokens);
+	}
+	
+	public static String buildToken(boolean wrapper, String... tokens) {
+		String token = "";
+		
+		for (String t : tokens) {
+			token += ":" + t;
+		}
+		token = token.substring(1);
+		if (wrapper) token = "[" + token + "]";
+		return token;
+	}
 
 	protected Map<String, String> tokens;
 	
@@ -39,18 +54,11 @@ public class Tokens {
 	}
 	
 	public void addToken(boolean wrapper, String replace, String... token) {
-		this.tokens.put(this.buildToken(wrapper, token), replace);
+		this.tokens.put(this.tokenBuildToken(wrapper, token), replace);
 	}
 	
-	public String buildToken(boolean wrapper, String... tokens) {
-		String token = "";
-		
-		for (String t : tokens) {
-			token += ":" + t;
-		}
-		token = token.substring(1);
-		if (wrapper) token = "[" + token + "]";
-		return token;
+	public String tokenBuildToken(boolean wrapper, String... tokens) {
+		return Tokens.buildToken(wrapper, tokens);
 	}
 	
 }
