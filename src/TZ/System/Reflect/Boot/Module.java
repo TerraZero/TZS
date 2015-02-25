@@ -3,6 +3,7 @@ package TZ.System.Reflect.Boot;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import TZ.System.Lists.Weighted;
 import TZ.System.Reflect.Reflect;
@@ -33,6 +34,15 @@ public class Module implements Weighted {
 			}
 		}
 		return moduleAnnots;
+	}
+	
+	public static<annot extends Annotation> void forAnnotation(List<Module> modules, Class<annot> annotation, BiConsumer<Module, annot> consumer) {
+		for (Module module : modules) {
+			annot annot = module.reflect().getAnnotation(annotation);
+			if (annot != null) {
+				consumer.accept(module, annot);
+			}
+		}
 	}
 
 	protected String name;

@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Mech {
 
-	public String name();
+	public String option();
 	
 	public String mechnic();
 	

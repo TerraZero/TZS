@@ -13,6 +13,7 @@ import TZ.System.Reflect.CallState;
 import TZ.System.Reflect.Reflects;
 import TZ.System.Reflect.Boot.Module;
 import TZ.System.Reflect.Boot.BootLoader;
+import TZ.System.Reflect.Exception.ReflectException;
 
 /**
  * 
@@ -75,14 +76,23 @@ public class TZSystem {
 	}
 	
 	public void sysExecute(String program) {
-		this.program = program;
-		
-		this.bootStep("Loading Modules");
-		this.sysModules();
-		this.bootStep("Booting Modules");
-		this.sysBooting();
-		this.bootStep("Initiating Modules");
-		this.sysIniting();
+		try {
+			this.program = program;
+			
+			this.bootStep("Loading Modules");
+			this.sysModules();
+			this.bootStep("Booting Modules");
+			this.sysBooting();
+			this.bootStep("Initiating Modules");
+			this.sysIniting();
+		} catch (ReflectException e) {
+			Exception re = e.exception();
+			if (re != null) {
+				re.printStackTrace();
+			} else {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void sysModules() {

@@ -37,4 +37,8 @@ public class TZException extends RuntimeException {
 		return debug;
 	}
 	
+	public Exception exception() {
+		return this.e;
+	}
+	
 }

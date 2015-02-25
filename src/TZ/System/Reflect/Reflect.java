@@ -90,6 +90,7 @@ public class Reflect {
 		if (!functions.isEmpty()) {
 			for (Method function : functions) {
 				try {
+					System.out.println(function);
 					function.invoke(this.reflect, parameters);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					throw new ReflectException(e, "call", "call");
