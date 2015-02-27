@@ -28,9 +28,7 @@ public class FileSystem {
 	
 	public static void main(String[] args) {
 		TZSystem.execute("TestProgram");
-		Fid fid = FileSystem.get("[default]", "test");
-		System.out.println(fid.file());
-		System.out.println(fid.context());
+		FileSystem.get("[default]", "test");
 	}
 	
 	private static FileSystem filesystem;
@@ -38,6 +36,10 @@ public class FileSystem {
 	@BootFunction
 	public static void bootFileSystem(String id, Module module, List<Module> classes) {
 		FileSystem.filesystem = new FileSystem();
+	}
+	
+	public static Fid get(String name) {
+		return FileSystem.filesystem.fsGet(null, name, null);
 	}
 	
 	public static Fid get(String context, String name) {

@@ -56,6 +56,10 @@ public class TZSystem {
 		TZSystem.getSystem().sysExit(code);
 	}
 	
+	public static void moduleMessage(String message) {
+		TZSystem.getSystem().sysModuleMessage(message);
+	}
+	
 	public static String program() {
 		return TZSystem.getSystem().fsProgram();
 	}
@@ -70,6 +74,9 @@ public class TZSystem {
 	protected List<Module> modules;
 	protected Cache<List<CallState>> invokes;
 	protected String program;
+	
+	// temp module
+	protected Module module;
 	
 	public TZSystem() {
 		this.invokes = new Cache<List<CallState>>("system-invoke");
@@ -112,12 +119,14 @@ public class TZSystem {
 	
 	public void sysBooting() {
 		for (Module module : this.modules) {
+			this.module = module;
 			module.reflect().call(BootFunction.class, TZSystem.BOOT_ID, module, this.classes);
 		}
 	}
 	
 	public void sysIniting() {
 		for (Module module : this.modules) {
+			this.module = module;
 			module.reflect().call(InitFunction.class, TZSystem.INIT_ID, module, this.classes);
 		}
 	}
@@ -139,6 +148,10 @@ public class TZSystem {
 	
 	public void bootStep(String step) {
 		this.sysOut(step + "...");
+	}
+	
+	public void sysModuleMessage(String message) {
+		this.sysOut(this.module.name() + ": " + message);
 	}
 	
 	public void develOut(List<Module> modules) {

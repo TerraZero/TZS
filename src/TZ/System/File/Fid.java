@@ -74,4 +74,12 @@ public class Fid {
 		return Files.exists(this.path);
 	}
 	
+	/* 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "[Fid] " + this.path;
+	}
+	
 }
