@@ -1,5 +1,6 @@
 package TZ.System;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Annotations.Functions.ExitFunction;
 import TZ.System.Annotations.Functions.InitFunction;
 import TZ.System.Cache.Cache;
+import TZ.System.File.Fid;
+import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
 import TZ.System.Reflect.CallState;
 import TZ.System.Reflect.Reflects;
@@ -64,6 +67,10 @@ public class TZSystem {
 		return TZSystem.getSystem().fsProgram();
 	}
 	
+	public static String machineProgram() {
+		return TZSystem.getSystem().fsMachineProgram();
+	}
+	
 
 	
 	public static void invoke(String function, Object... parameters) {
@@ -86,11 +93,13 @@ public class TZSystem {
 		try {
 			this.program = program;
 			
-			this.bootStep("Loading Modules");
+			this.sysMessage("Install System...");
+			this.sysInstall();
+			this.sysMessage("Loading Modules...");
 			this.sysModules();
-			this.bootStep("Booting Modules");
+			this.sysMessage("Booting Modules...");
 			this.sysBooting();
-			this.bootStep("Initiating Modules");
+			this.sysMessage("Initiating Modules...");
 			this.sysIniting();
 		} catch (ReflectException e) {
 			Exception re = e.exception();
@@ -100,6 +109,51 @@ public class TZSystem {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public Fid getInstallFid() {
+		String program = TZSystem.machineProgram() + ".info.txt";
+		String root = new File("").getAbsolutePath();
+		Fid install = new Fid(root + "/" + program);
+		
+		this.sysMessage("Search info file:");
+		this.sysMessage(install + " ...");
+		if (install.isExist()) return install;
+		install = new Fid(System.getProperty("user.home") + "/" + program);
+		this.sysMessage(install + " ...");
+		if (install.isExist()) return install;
+		install = new Fid(root + "/tzs.info.txt");
+		this.sysMessage(install + " ...");
+		if (install.isExist()) return install;
+		install = new Fid(System.getProperty("user.home") + "/tzs.info.txt");
+		this.sysMessage(install + " ...");
+		if (install.isExist()) return install;
+		return null;
+	}
+	
+	public void sysInstall() {
+		Fid install = this.getInstallFid();
+		if (install == null) {
+			this.sysMessage("Installing...");
+			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
+			this.sysMessage("Create Info File: " + install);
+			if (install.create()) {
+				this.sysMessage("Success");
+			} else {
+				this.sysMessage("Failed");
+				this.sysInstallEnd();
+			}
+			InfoFile info = new InfoFile(install);
+			// TODO 
+			this.sysMessage("Completed...");
+		} else {
+			this.sysMessage("Info file: " + install);
+		}
+	}
+	
+	public void sysInstallEnd() {
+		this.sysMessage("Install abort!");
+		this.sysExit(1);
 	}
 	
 	public void sysModules() {
@@ -133,12 +187,15 @@ public class TZSystem {
 	
 	public void sysExit(int code) {
 		this.sysExiting(code);
+		this.sysMessage("Exit");
 		System.exit(code);
 	}
 	
 	public void sysExiting(int code) {
-		for (Module module : this.modules) {
-			module.reflect().call(ExitFunction.class, TZSystem.EXIT_ID, module, this.classes);
+		if (this.modules != null) {
+			for (Module module : this.modules) {
+				module.reflect().call(ExitFunction.class, TZSystem.EXIT_ID, module, this.classes);
+			}
 		}
 	}
 	
@@ -146,8 +203,8 @@ public class TZSystem {
 		System.out.println(out);
 	}
 	
-	public void bootStep(String step) {
-		this.sysOut(step + "...");
+	public void sysMessage(String step) {
+		this.sysOut(step);
 	}
 	
 	public void sysModuleMessage(String message) {
@@ -177,6 +234,10 @@ public class TZSystem {
 	
 	public String fsProgram() {
 		return this.program;
+	}
+	
+	public String fsMachineProgram() {
+		return this.program.replaceAll(" ", "-").toLowerCase();
 	}
 	
 }

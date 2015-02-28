@@ -1,6 +1,7 @@
 package TZ.System.File;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -74,12 +75,25 @@ public class Fid {
 		return Files.exists(this.path);
 	}
 	
+	public boolean create() {
+		try {
+			this.file.createNewFile();
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean createDirs() {
+		return this.file.mkdirs();
+	}
+	
 	/* 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "[Fid] " + this.path;
+		return "[Fid] " + this.file;
 	}
 	
 }
