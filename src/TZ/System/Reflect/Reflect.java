@@ -60,7 +60,11 @@ public class Reflect {
 	}
 	
 	public Reflect instantiate(Object... args) {
-		if (this.reflect == null) {
+		return this.instantiate(false, args);
+	}
+	
+	public Reflect instantiate(boolean force, Object... args) {
+		if (this.reflect == null || force) {
 			try {
 				if (args.length == 0) {
 					this.reflect = this.reflectClass.newInstance();
