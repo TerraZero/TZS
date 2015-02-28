@@ -36,6 +36,14 @@ public class Mechnic {
 	public static<type> type get(String name, Object... args) {
 		return Mechnic.mechnic.mechnicGet(name, args);
 	}
+	
+	public static<type> type getContext(String context, String name, Object... args) {
+		return Mechnic.mechnic.mechnicGetContext(context, name, args);
+	}
+	
+	public static<type> MechnicCreator<type> getCreator(String context, String name) {
+		return Mechnic.mechnic.mechnicCreator(context, name);
+	}
 
 	protected Map<String, MechnicCreator<?>> mechnics;
 	
@@ -48,8 +56,22 @@ public class Mechnic {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public<type> MechnicCreator<type> mechnicCreator(String context, String name) {
+		MechnicCreator<?> mechnic = this.mechnics.get(context + ":" + name);
+		if (mechnic == null) mechnic = this.mechnics.get(name);
+		return (MechnicCreator<type>)mechnic;
+	}
+	
+	@SuppressWarnings("unchecked")
 	protected<type> type mechnicGet(String name, Object... args) {
 		MechnicCreator<?> mechnic = this.mechnics.get(name);
+		return (type)mechnic.mechnic(args);
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected<type> type mechnicGetContext(String context, String name, Object... args) {
+		MechnicCreator<?> mechnic = this.mechnics.get(context + ":" + name);
+		if (mechnic == null) mechnic = this.mechnics.get(name); 
 		return (type)mechnic.mechnic(args);
 	}
 	

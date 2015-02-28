@@ -16,7 +16,7 @@ import TZ.System.Mechnic.MechnicCreator;
  *
  */
 @Mech(option = "arraylist", mechnic = "list")
-public class GArrayList implements MechnicCreator<ArrayList<?>> {
+public class MechnicList implements MechnicCreator<ArrayList<?>> {
 	
 	@Override
 	public ArrayList<?> mechnic(Object[] args) {
