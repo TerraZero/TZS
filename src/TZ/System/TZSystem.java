@@ -2,9 +2,10 @@ package TZ.System;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Annotations.Functions.ExitFunction;
 import TZ.System.Annotations.Functions.InitFunction;
@@ -71,6 +72,10 @@ public class TZSystem {
 		return TZSystem.getSystem().fsMachineProgram();
 	}
 	
+	public static String nameToID(String name) {
+		return TZSystem.getSystem().fsNameToID(name);
+	}
+	
 
 	
 	public static void invoke(String function, Object... parameters) {
@@ -114,20 +119,21 @@ public class TZSystem {
 	public Fid getInstallFid() {
 		String program = TZSystem.machineProgram() + ".info.txt";
 		String root = new File("").getAbsolutePath();
-		Fid install = new Fid(root + "/" + program);
+		Fid install = null;
+		String[] files = {
+			root + "/" + program,
+			System.getProperty("user.home") + "/" + program,
+			root + "/tzs.info.txt",
+			System.getProperty("user.home") + "/tzs.info.txt",
+		};
 		
 		this.sysMessage("Search info file:");
-		this.sysMessage(install + " ...");
-		if (install.isExist()) return install;
-		install = new Fid(System.getProperty("user.home") + "/" + program);
-		this.sysMessage(install + " ...");
-		if (install.isExist()) return install;
-		install = new Fid(root + "/tzs.info.txt");
-		this.sysMessage(install + " ...");
-		if (install.isExist()) return install;
-		install = new Fid(System.getProperty("user.home") + "/tzs.info.txt");
-		this.sysMessage(install + " ...");
-		if (install.isExist()) return install;
+		for (int i = 0; i < files.length; i++) {
+			install = new Fid(files[i]);
+			this.sysQuest(install + " ...");
+			if (install.isExist()) return install;
+			this.sysResponds("not found");
+		}
 		return null;
 	}
 	
@@ -136,17 +142,18 @@ public class TZSystem {
 		if (install == null) {
 			this.sysMessage("Installing...");
 			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
-			this.sysMessage("Create Info File: " + install);
+			this.sysQuest("Create Info File: " + install);
 			if (install.create()) {
-				this.sysMessage("Success");
+				this.sysResponds("Success");
 			} else {
-				this.sysMessage("Failed");
+				this.sysResponds("Failed");
 				this.sysInstallEnd();
 			}
 			InfoFile info = new InfoFile(install);
 			// TODO 
 			this.sysMessage("Completed...");
 		} else {
+			this.sysResponds("found");
 			this.sysMessage("Info file: " + install);
 		}
 	}
@@ -157,13 +164,12 @@ public class TZSystem {
 	}
 	
 	public void sysModules() {
-		this.modules = new ArrayList<Module>(512);
+		this.modules = new ArrayList<Module>(128);
 		this.classes = new BootLoader().boots();
 		
 		for (Module classe : classes) {
-			Info info = classe.reflect().getAnnotation(Info.class);
-			if (info != null) {
-				classe.weight(info.weight());
+			if (classe.isModule()) {
+				classe.weight(classe.info().weight());
 				this.modules.add(classe);
 			}
 		}
@@ -203,17 +209,25 @@ public class TZSystem {
 		System.out.println(out);
 	}
 	
-	public void sysMessage(String step) {
-		this.sysOut(step);
+	public void sysQuest(String quest) {
+		System.out.print(quest);
+	}
+	
+	public void sysResponds(String respond) {
+		System.out.println("\t[" + respond.toUpperCase() + "]");
+	}
+	
+	public void sysMessage(String message) {
+		this.sysOut(message);
 	}
 	
 	public void sysModuleMessage(String message) {
-		this.sysOut(this.module.name() + ": " + message);
+		this.sysOut(this.module.module() + ": " + message);
 	}
 	
 	public void develOut(List<Module> modules) {
 		for (Module module : modules) {
-			this.sysOut(module.name());
+			this.sysOut(module.module());
 		}
 	}
 	
@@ -237,7 +251,11 @@ public class TZSystem {
 	}
 	
 	public String fsMachineProgram() {
-		return this.program.replaceAll(" ", "-").toLowerCase();
+		return this.fsNameToID(this.program);
+	}
+	
+	public String fsNameToID(String name) {
+		return name.replaceAll(" ", "-").toLowerCase();
 	}
 	
 }

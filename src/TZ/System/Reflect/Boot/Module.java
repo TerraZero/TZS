@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import TZ.System.TZSystem;
+import TZ.System.Annotations.Info;
 import TZ.System.Lists.Weighted;
 import TZ.System.Reflect.Reflect;
 
@@ -49,6 +51,7 @@ public class Module implements Weighted {
 	protected String path;
 	protected int weight;
 	protected Reflect reflect;
+	protected Info info;
 	
 	public Module(String name, String path) {
 		this.name = name;
@@ -93,6 +96,29 @@ public class Module implements Weighted {
 	
 	public void reflect(Reflect reflect) {
 		this.reflect = reflect;
+	}
+	
+	public Info info() {
+		if (this.info == null) {
+			this.info = this.reflect().getAnnotation(Info.class);
+		}
+		return this.info;
+	}
+	
+	public boolean isModule() {
+		return this.info() != null;
+	}
+	
+	public String module() {
+		String module = this.info().name();
+		if (module.length() == 0) {
+			module = this.name();
+		}
+		return module;
+	}
+	
+	public String moduleID() {
+		return TZSystem.nameToID(this.module());
 	}
 	
 }

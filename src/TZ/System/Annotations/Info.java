@@ -18,7 +18,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Info {
+	
+	// data
 
 	public int weight() default 0;
+	
+	public String name() default "";
+	
+	// system
+	
+	public boolean system() default false;
+	
+	// info
+	
+	public String[] dependencies() default {};
 	
 }
