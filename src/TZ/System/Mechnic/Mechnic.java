@@ -7,7 +7,7 @@ import java.util.Map;
 import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
-import TZ.System.Reflect.Boot.Module;
+import TZ.System.Boot.Module;
 
 /**
  * 

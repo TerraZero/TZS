@@ -2,13 +2,10 @@ package TZ.System.File;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.List;
 
 import TZ.System.TZSystem;
-import TZ.System.Annotations.Info;
-import TZ.System.Annotations.Functions.BootFunction;
+import TZ.System.Annotations.Construction;
 import TZ.System.Base.Tokens;
-import TZ.System.Reflect.Boot.Module;
 
 /**
  * 
@@ -20,8 +17,8 @@ import TZ.System.Reflect.Boot.Module;
  * @identifier TZ.System.File
  *
  */
-@Info
-public class FileSystem {
+@Construction(name = "filesystem", system = true)
+public class FileSystem implements FileSystemConstruction {
 	
 	public static final String DEFAULT_SYSTEM_TOKEN = "[default]";
 	public static final String DEFAULT_CONTEXT_TOKEN = "[default]";
@@ -31,23 +28,18 @@ public class FileSystem {
 		FileSystem.get("[default]", "test");
 	}
 	
-	private static FileSystem filesystem;
-	
-	@BootFunction
-	public static void bootFileSystem(String id, Module module, List<Module> classes) {
-		FileSystem.filesystem = new FileSystem();
-	}
+	public static FileSystem construction;
 	
 	public static Fid get(String name) {
-		return FileSystem.filesystem.fsGet(null, name, null);
+		return FileSystem.construction.fsGet(null, name, null);
 	}
 	
 	public static Fid get(String context, String name) {
-		return FileSystem.filesystem.fsGet(context, name, null);
+		return FileSystem.construction.fsGet(context, name, null);
 	}
 	
 	public static Fid get(String context, String name, String dir) {
-		return FileSystem.filesystem.fsGet(context, name, dir);
+		return FileSystem.construction.fsGet(context, name, dir);
 	}
 	
 	public static Fid getExist(String context, String name) {

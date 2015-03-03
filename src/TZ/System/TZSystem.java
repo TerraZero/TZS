@@ -2,19 +2,22 @@ package TZ.System;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Annotations.Functions.ExitFunction;
 import TZ.System.Annotations.Functions.InitFunction;
+import TZ.System.Boot.BootLoader;
+import TZ.System.Boot.ConstrucktionModule;
+import TZ.System.Boot.Module;
 import TZ.System.Cache.Cache;
 import TZ.System.File.Fid;
-import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
 import TZ.System.Reflect.CallState;
 import TZ.System.Reflect.Reflects;
-import TZ.System.Reflect.Boot.Module;
-import TZ.System.Reflect.Boot.BootLoader;
 import TZ.System.Reflect.Exception.ReflectException;
 
 /**
@@ -81,6 +84,7 @@ public class TZSystem {
 	}
 	
 	protected List<Module> classes;
+	protected Map<String, ConstrucktionModule> constructions;
 	protected List<Module> modules;
 	protected Cache<List<CallState>> invokes;
 	protected String program;
@@ -95,6 +99,7 @@ public class TZSystem {
 	public void sysExecute(String program) {
 		try {
 			this.program = program;
+			this.sysConstruction();
 			
 			TZMessage.out("Install system...");
 			this.sysInstall();
@@ -147,7 +152,7 @@ public class TZSystem {
 				TZMessage.respond("Failed");
 				this.sysInstallEnd();
 			}
-			InfoFile info = new InfoFile(install);
+			//InfoFile info = new InfoFile(install);
 			// TODO 
 			TZMessage.out("Completed...");
 		} else {
@@ -161,13 +166,56 @@ public class TZSystem {
 		this.sysExit(1);
 	}
 	
+	public void sysConstruction() {
+		this.classes = new BootLoader().boots();
+		Map<String, List<ConstrucktionModule>> constructions = new HashMap<String, List<ConstrucktionModule>>();
+		this.constructions = new HashMap<String, ConstrucktionModule>();
+		
+		// build construction map
+		for (Module classe : this.classes) {
+			Construction construction = classe.reflect().getAnnotation(Construction.class);
+			if (construction != null) {
+				List<ConstrucktionModule> sc = constructions.get(construction.name());
+				if (sc == null) {
+					sc = new ArrayList<ConstrucktionModule>(8);
+					constructions.put(construction.name(), sc);
+				}
+				sc.add(new ConstrucktionModule(classe, construction));
+			}
+		}
+		
+		// execute construction map
+		constructions.forEach((s, l) -> {
+			// sort list after weight
+			Lists.sortASC(l);
+			
+			ConstrucktionModule system = null;
+			// get system module
+			for (ConstrucktionModule m : l) {
+				if (m.isSystem()) {
+					system = m;
+					break;
+				}
+			}
+			l.remove(system);
+			
+			// WHEN are other constructions available THAN get the last
+			if (l.size() != 0) {
+				ConstrucktionModule active = l.get(l.size() - 1);
+				active.system(system);
+				this.constructions.put(active.name(), active);
+			// ELSE get the system construction
+			} else {
+				this.constructions.put(system.name(), system);
+			}
+		});
+	}
+	
 	public void sysModules() {
 		this.modules = new ArrayList<Module>(128);
-		TZMessage.out("Load classes...");
-		this.classes = new BootLoader().boots();
 		
 		TZMessage.out("Build modules...");
-		for (Module classe : classes) {
+		for (Module classe : this.classes) {
 			if (classe.isModule()) {
 				classe.weight(classe.info().weight());
 				this.modules.add(classe);

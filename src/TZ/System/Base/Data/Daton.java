@@ -6,9 +6,9 @@ import java.util.Map;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.InitFunction;
+import TZ.System.Boot.Module;
 import TZ.System.Mechnic.Mechnic;
 import TZ.System.Mechnic.MechnicCreator;
-import TZ.System.Reflect.Boot.Module;
 
 /**
  * 
