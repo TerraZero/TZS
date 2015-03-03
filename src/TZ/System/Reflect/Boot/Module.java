@@ -52,6 +52,8 @@ public class Module implements Weighted {
 	protected int weight;
 	protected Reflect reflect;
 	protected Info info;
+	protected boolean dependencies;
+	protected boolean checked;
 	
 	public Module(String name, String path) {
 		this.name = name;
@@ -119,6 +121,26 @@ public class Module implements Weighted {
 	
 	public String moduleID() {
 		return TZSystem.nameToID(this.module());
+	}
+	
+	/**
+	 * @return
+	 * 		TRUE - if module have all dependencies available
+	 */
+	public boolean isDependencies() {
+		return this.dependencies;
+	}
+	
+	public void dependencies(boolean dependencies) {
+		this.dependencies = dependencies;
+	}
+	
+	public boolean isChecked() {
+		return this.checked;
+	}
+	
+	public void checked(boolean checked) {
+		this.checked = checked;
 	}
 	
 }

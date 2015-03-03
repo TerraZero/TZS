@@ -2,9 +2,7 @@ package TZ.System;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Annotations.Functions.ExitFunction;
@@ -52,16 +50,12 @@ public class TZSystem {
 		TZSystem.getSystem().sysExecute(programm);
 	}
 	
-	public static void out(String out) {
-		TZSystem.getSystem().sysOut(out);
-	}
-	
 	public static void exit(int code) {
 		TZSystem.getSystem().sysExit(code);
 	}
 	
-	public static void moduleMessage(String message) {
-		TZSystem.getSystem().sysModuleMessage(message);
+	public static Module activeModule() {
+		return TZSystem.getSystem().module;
 	}
 	
 	public static String program() {
@@ -74,6 +68,10 @@ public class TZSystem {
 	
 	public static String nameToID(String name) {
 		return TZSystem.getSystem().fsNameToID(name);
+	}
+	
+	public static Module getModule(String name) {
+		return TZSystem.getSystem().sysGetModule(name);
 	}
 	
 
@@ -98,13 +96,13 @@ public class TZSystem {
 		try {
 			this.program = program;
 			
-			this.sysMessage("Install System...");
+			TZMessage.out("Install system...");
 			this.sysInstall();
-			this.sysMessage("Loading Modules...");
+			TZMessage.out("Loading modules...");
 			this.sysModules();
-			this.sysMessage("Booting Modules...");
+			TZMessage.out("Booting modules...");
 			this.sysBooting();
-			this.sysMessage("Initiating Modules...");
+			TZMessage.out("Initiating modules...");
 			this.sysIniting();
 		} catch (ReflectException e) {
 			Exception re = e.exception();
@@ -127,12 +125,12 @@ public class TZSystem {
 			System.getProperty("user.home") + "/tzs.info.txt",
 		};
 		
-		this.sysMessage("Search info file:");
+		TZMessage.out("Search info file:");
 		for (int i = 0; i < files.length; i++) {
 			install = new Fid(files[i]);
-			this.sysQuest(install + " ...");
+			TZMessage.quest(install + " ...");
 			if (install.isExist()) return install;
-			this.sysResponds("not found");
+			TZMessage.respond("not found");
 		}
 		return null;
 	}
@@ -140,41 +138,96 @@ public class TZSystem {
 	public void sysInstall() {
 		Fid install = this.getInstallFid();
 		if (install == null) {
-			this.sysMessage("Installing...");
+			TZMessage.out("Installing...");
 			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
-			this.sysQuest("Create Info File: " + install);
+			TZMessage.quest("Create info file: " + install);
 			if (install.create()) {
-				this.sysResponds("Success");
+				TZMessage.respond("Success");
 			} else {
-				this.sysResponds("Failed");
+				TZMessage.respond("Failed");
 				this.sysInstallEnd();
 			}
 			InfoFile info = new InfoFile(install);
 			// TODO 
-			this.sysMessage("Completed...");
+			TZMessage.out("Completed...");
 		} else {
-			this.sysResponds("found");
-			this.sysMessage("Info file: " + install);
+			TZMessage.respond("found");
+			TZMessage.out("Info file: " + install);
 		}
 	}
 	
 	public void sysInstallEnd() {
-		this.sysMessage("Install abort!");
+		TZMessage.out("Install abort!");
 		this.sysExit(1);
 	}
 	
 	public void sysModules() {
 		this.modules = new ArrayList<Module>(128);
+		TZMessage.out("Load classes...");
 		this.classes = new BootLoader().boots();
 		
+		TZMessage.out("Build modules...");
 		for (Module classe : classes) {
 			if (classe.isModule()) {
 				classe.weight(classe.info().weight());
 				this.modules.add(classe);
 			}
 		}
+		
+		TZMessage.out("Sort modules");
 		Lists.sortASC(this.modules);
+		
+		TZMessage.out("Build dependencies...");
+		List<Module> dependencyTree = new ArrayList<Module>(this.modules.size());
+		for (Module module : this.modules) {
+			this.sysBuildModuleDependencie(dependencyTree, module);
+		}
+		this.modules = dependencyTree;
+		TZMessage.out("Complete...");
+		
 		this.develOut(this.modules);
+	}
+	
+	public void sysBuildModuleDependencie(List<Module> dependencyTree, Module module) {
+		TZMessage.out("Check '" + module.module() + "' ...");
+		if (module.isChecked()) {
+			TZMessage.respond("already checked");
+		} else {
+			boolean check = true;
+			// WHEN module have dependencies THAN add dependencies first
+			if (module.info().dependencies().length != 0) {
+				for (String dependency :  module.info().dependencies()) {
+					TZMessage.quest("\t'" + module.module() + "' dependence on '" + dependency + "'");
+					Module dm = this.sysGetModule(dependency);
+					// WHEN module is NOT available
+					if (dm == null) {
+						TZMessage.respond("not found");
+						check = false;
+						break;
+					// WHEN module have already been checked THAN ignore module
+					} else if (!dm.isDependencies()) {
+						TZMessage.respond("found");
+						this.sysBuildModuleDependencie(dependencyTree, dm);
+					} else {
+						TZMessage.respond("already load");
+					}
+				}
+			} else {
+				TZMessage.respond("no dependencies");
+			}
+			module.dependencies(check);
+			module.checked(true);
+			dependencyTree.add(module);
+		}
+	}
+	
+	public Module sysGetModule(String name) {
+		for (Module module : this.modules) {
+			if (module.module().equals(name)) {
+				return module;
+			}
+		}
+		return null;
 	}
 	
 	public void sysBooting() {
@@ -193,7 +246,7 @@ public class TZSystem {
 	
 	public void sysExit(int code) {
 		this.sysExiting(code);
-		this.sysMessage("Exit");
+		TZMessage.out("Exit");
 		System.exit(code);
 	}
 	
@@ -205,29 +258,9 @@ public class TZSystem {
 		}
 	}
 	
-	public void sysOut(String out) {
-		System.out.println(out);
-	}
-	
-	public void sysQuest(String quest) {
-		System.out.print(quest);
-	}
-	
-	public void sysResponds(String respond) {
-		System.out.println("\t[" + respond.toUpperCase() + "]");
-	}
-	
-	public void sysMessage(String message) {
-		this.sysOut(message);
-	}
-	
-	public void sysModuleMessage(String message) {
-		this.sysOut(this.module.module() + ": " + message);
-	}
-	
 	public void develOut(List<Module> modules) {
 		for (Module module : modules) {
-			this.sysOut(module.module());
+			TZMessage.out(module.module());
 		}
 	}
 	

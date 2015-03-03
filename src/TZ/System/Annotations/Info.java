@@ -27,7 +27,7 @@ public @interface Info {
 	
 	// system
 	
-	public boolean system() default false;
+	public String system() default "";
 	
 	// info
 	

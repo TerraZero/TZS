@@ -27,7 +27,7 @@ public class Daton {
 		TZSystem.execute("Test Daton");
 		Daton root = new Daton();
 		root.add("hier").add("type", "textfield").add("required", "false");
-		root.add("test").add("type", "container").add("cols", "2").add("items").add("submit").add("type", "submit").add("text", "Bestätigen");
+		root.add("test").add("type", "container").add("cols", "2").add("items").add("submit").add("type", "submit").add("text", "Bestï¿½tigen");
 		root.get("test").get("items").add("text").add("type", "markup").add("markup", "irgend ein text");
 		System.out.println(root.toTreeString());
 	}
