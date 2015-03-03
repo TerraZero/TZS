@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Reflect.Boot.Module;
@@ -18,6 +19,7 @@ import TZ.System.Reflect.Boot.Module;
  * @identifier TZ.Mechnic
  *
  */
+@Construction(name = "Mechnic")
 @Info(weight = -1000)
 public class Mechnic {
 	

@@ -27,7 +27,7 @@ public @interface Info {
 	
 	// system
 	
-	public String system() default "";
+	public String construction() default "";
 	
 	// info
 	
