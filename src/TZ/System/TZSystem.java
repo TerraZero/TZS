@@ -13,11 +13,8 @@ import TZ.System.Annotations.Functions.InitFunction;
 import TZ.System.Boot.BootLoader;
 import TZ.System.Boot.ConstrucktionModule;
 import TZ.System.Boot.Module;
-import TZ.System.Cache.Cache;
 import TZ.System.File.Fid;
 import TZ.System.Lists.Lists;
-import TZ.System.Reflect.CallState;
-import TZ.System.Reflect.Reflects;
 import TZ.System.Reflect.Exception.ReflectException;
 
 /**
@@ -208,7 +205,7 @@ public class TZSystem {
 	
 	public void sysConstructioning() {
 		this.constructions.forEach((s, c) -> {
-			if (c.info().init().length() == 0) {
+			if (c.system().info().init().length() != 0) {
 				c.system().module().reflect().call(c.info().init());
 			}
 		});

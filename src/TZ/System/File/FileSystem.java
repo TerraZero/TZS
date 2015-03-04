@@ -17,7 +17,7 @@ import TZ.System.Base.Tokens;
  * @identifier TZ.System.File
  *
  */
-@Construction(name = "filesystem", system = true)
+@Construction(name = "filesystem", system = true, init = "construction")
 public class FileSystem implements FileSystemConstruction {
 	
 	public static final String DEFAULT_SYSTEM_TOKEN = "[default]";
