@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import TZ.System.Annotations.Construction;
-import TZ.System.Annotations.Functions.ExitFunction;
 import TZ.System.Construction.Boot.BootSystem;
+import TZ.System.Construction.Exit.ExitSystem;
 import TZ.System.Construction.Init.InitSystem;
+import TZ.System.Construction.Install.InstallSystem;
 import TZ.System.File.Fid;
 import TZ.System.Lists.Lists;
 import TZ.System.Reflect.Exception.ReflectException;
@@ -32,6 +33,7 @@ public class TZSystem {
 	
 	public static void main(String[] args) {
 		TZSystem.execute("test");
+		TZSystem.exit(0);
 	}
 	
 	private static TZSystem system;
@@ -90,7 +92,6 @@ public class TZSystem {
 			this.sysConstruction();
 			this.sysConstructioning();
 			
-			TZMessage.out("Install system...");
 			this.sysInstall();
 			this.sysBooting();
 			this.sysIniting();
@@ -102,53 +103,6 @@ public class TZSystem {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	public Fid getInstallFid() {
-		String program = TZSystem.machineProgram() + ".info.txt";
-		String root = new File("").getAbsolutePath();
-		Fid install = null;
-		String[] files = {
-			root + "/" + program,
-			System.getProperty("user.home") + "/" + program,
-			root + "/tzs.info.txt",
-			System.getProperty("user.home") + "/tzs.info.txt",
-		};
-		
-		TZMessage.out("Search info file:");
-		for (int i = 0; i < files.length; i++) {
-			install = new Fid(files[i]);
-			TZMessage.quest(install + " ...");
-			if (install.isExist()) return install;
-			TZMessage.respond("not found");
-		}
-		return null;
-	}
-	
-	public void sysInstall() {
-		Fid install = this.getInstallFid();
-		if (install == null) {
-			TZMessage.out("Installing...");
-			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
-			TZMessage.quest("Create info file: " + install);
-			if (install.create()) {
-				TZMessage.respond("Success");
-			} else {
-				TZMessage.respond("Failed");
-				this.sysInstallEnd();
-			}
-			//InfoFile info = new InfoFile(install);
-			// TODO 
-			TZMessage.out("Completed...");
-		} else {
-			TZMessage.respond("found");
-			TZMessage.out("Info file: " + install);
-		}
-	}
-	
-	public void sysInstallEnd() {
-		TZMessage.out("Install abort!");
-		this.sysExit(1);
 	}
 	
 	public void sysConstruction() {
@@ -204,6 +158,13 @@ public class TZSystem {
 		});
 	}
 	
+	public void sysInstall() {
+		TZMessage.out("Install system...");
+		String[] files = InstallSystem.installFiles(TZSystem.machineProgram() + ".info.txt", new File("").getAbsolutePath());
+		Fid install = InstallSystem.installFid(files);
+		InstallSystem.installing(install);
+	}
+	
 	public void sysBooting() {
 		TZMessage.out("Loading modules...");
 		this.modules = BootSystem.bootModules(this.classes);
@@ -217,6 +178,11 @@ public class TZSystem {
 		this.develOut(this.modules);
 	}
 	
+	public void sysIniting() {
+		TZMessage.out("Initiating modules...");
+		InitSystem.initing(this.modules, this.classes);
+	}
+	
 	public Module sysGetModule(String name) {
 		for (Module module : this.modules) {
 			if (module.module().equals(name)) {
@@ -226,23 +192,9 @@ public class TZSystem {
 		return null;
 	}
 	
-	public void sysIniting() {
-		TZMessage.out("Initiating modules...");
-		InitSystem.initing(this.modules, this.classes);
-	}
-	
 	public void sysExit(int code) {
-		this.sysExiting(code);
-		TZMessage.out("Exit");
-		System.exit(code);
-	}
-	
-	public void sysExiting(int code) {
-		if (this.modules != null) {
-			for (Module module : this.modules) {
-				module.reflect().call(ExitFunction.class, TZSystem.EXIT_ID, module, this.classes);
-			}
-		}
+		ExitSystem.exiting(code, this.modules, this.classes);
+		ExitSystem.exit(code);
 	}
 	
 	public void develOut(List<Module> modules) {
