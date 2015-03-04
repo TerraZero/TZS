@@ -1,5 +1,8 @@
 package TZ.System.Boot;
 
+import TZ.System.TZSystem;
+import TZ.System.Annotations.Construction;
+
 /**
  * 
  * @author terrazero
@@ -10,6 +13,16 @@ package TZ.System.Boot;
  * @identifier TZ.System.Boot
  *
  */
-public class BootSystem {
+@Construction(name = "bootsystem", system = true)
+public class BootSystem implements BootSystemConstruction {
 
+	private static BootSystemConstruction construction;
+	
+	public static BootSystemConstruction construction() {
+		if (BootSystem.construction == null) {
+			BootSystem.construction = TZSystem.construction("bootsystem");
+		}
+		return BootSystem.construction;
+	}
+	
 }
