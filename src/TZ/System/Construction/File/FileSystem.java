@@ -1,4 +1,4 @@
-package TZ.System.File;
+package TZ.System.Construction.File;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Base.Tokens;
+import TZ.System.File.Fid;
 
 /**
  * 

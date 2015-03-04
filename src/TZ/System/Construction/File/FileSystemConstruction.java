@@ -1,4 +1,6 @@
-package TZ.System.File;
+package TZ.System.Construction.File;
+
+import TZ.System.File.Fid;
 
 /**
  * 

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import TZ.System.Annotations.Construction;
-import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Annotations.Functions.ExitFunction;
-import TZ.System.Annotations.Functions.InitFunction;
+import TZ.System.Construction.Boot.BootSystem;
+import TZ.System.Construction.Init.InitSystem;
 import TZ.System.File.Fid;
 import TZ.System.Lists.Lists;
 import TZ.System.Reflect.Exception.ReflectException;
@@ -92,11 +92,7 @@ public class TZSystem {
 			
 			TZMessage.out("Install system...");
 			this.sysInstall();
-			TZMessage.out("Loading modules...");
-			this.sysModules();
-			TZMessage.out("Booting modules...");
 			this.sysBooting();
-			TZMessage.out("Initiating modules...");
 			this.sysIniting();
 		} catch (ReflectException e) {
 			Exception re = e.exception();
@@ -208,62 +204,17 @@ public class TZSystem {
 		});
 	}
 	
-	public void sysModules() {
-		this.modules = new ArrayList<Module>(128);
+	public void sysBooting() {
+		TZMessage.out("Loading modules...");
+		this.modules = BootSystem.bootModules(this.classes);
+		BootSystem.bootModulesSort(this.modules);
+		this.modules = BootSystem.bootModulesDependencies(this.modules);
 		
-		TZMessage.out("Build modules...");
-		for (Module classe : this.classes) {
-			if (classe.isModule()) {
-				classe.weight(classe.info().weight());
-				this.modules.add(classe);
-			}
-		}
+		TZMessage.out("Booting modules...");
+		BootSystem.booting(this.modules, this.classes);
 		
-		TZMessage.out("Sort modules");
-		Lists.sortASC(this.modules);
-		
-		TZMessage.out("Build dependencies...");
-		List<Module> dependencyTree = new ArrayList<Module>(this.modules.size());
-		for (Module module : this.modules) {
-			this.sysBuildModuleDependencie(dependencyTree, module);
-		}
-		this.modules = dependencyTree;
-		TZMessage.out("Complete...");
-		
+		// devel
 		this.develOut(this.modules);
-	}
-	
-	public void sysBuildModuleDependencie(List<Module> dependencyTree, Module module) {
-		TZMessage.out("Check '" + module.module() + "' ...");
-		if (module.isChecked()) {
-			TZMessage.respond("already checked");
-		} else {
-			boolean check = true;
-			// WHEN module have dependencies THAN add dependencies first
-			if (module.info().dependencies().length != 0) {
-				for (String dependency :  module.info().dependencies()) {
-					TZMessage.quest("\t'" + module.module() + "' dependence on '" + dependency + "'");
-					Module dm = this.sysGetModule(dependency);
-					// WHEN module is NOT available
-					if (dm == null) {
-						TZMessage.respond("not found");
-						check = false;
-						break;
-					// WHEN module have already been checked THAN ignore module
-					} else if (!dm.isDependencies()) {
-						TZMessage.respond("found");
-						this.sysBuildModuleDependencie(dependencyTree, dm);
-					} else {
-						TZMessage.respond("already load");
-					}
-				}
-			} else {
-				TZMessage.respond("no dependencies");
-			}
-			module.dependencies(check);
-			module.checked(true);
-			dependencyTree.add(module);
-		}
 	}
 	
 	public Module sysGetModule(String name) {
@@ -275,18 +226,9 @@ public class TZSystem {
 		return null;
 	}
 	
-	public void sysBooting() {
-		for (Module module : this.modules) {
-			this.module = module;
-			module.reflect().call(BootFunction.class, TZSystem.BOOT_ID, module, this.classes);
-		}
-	}
-	
 	public void sysIniting() {
-		for (Module module : this.modules) {
-			this.module = module;
-			module.reflect().call(InitFunction.class, TZSystem.INIT_ID, module, this.classes);
-		}
+		TZMessage.out("Initiating modules...");
+		InitSystem.initing(this.modules, this.classes);
 	}
 	
 	public void sysExit(int code) {

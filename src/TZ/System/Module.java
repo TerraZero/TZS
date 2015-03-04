@@ -49,7 +49,6 @@ public class Module implements Weighted, AnnotationWrapper<Info> {
 
 	protected String name;
 	protected String path;
-	protected int weight;
 	protected Reflect reflect;
 	protected Info info;
 	protected boolean dependencies;
@@ -82,11 +81,7 @@ public class Module implements Weighted, AnnotationWrapper<Info> {
 	}
 	
 	public int weight() {
-		return this.weight;
-	}
-	
-	public void weight(int weight) {
-		this.weight = weight;
+		return this.info().weight();
 	}
 	
 	public Reflect reflect() {
