@@ -1,5 +1,6 @@
 package TZ.System.Boot;
 
+import TZ.System.Annotations.AnnotationWrapper;
 import TZ.System.Annotations.Construction;
 import TZ.System.Lists.Weighted;
 
@@ -13,7 +14,7 @@ import TZ.System.Lists.Weighted;
  * @identifier TZ.System.Boot
  *
  */
-public class ConstrucktionModule implements Weighted {
+public class ConstrucktionModule implements Weighted, AnnotationWrapper<Construction> {
 
 	protected Module module;
 	protected Construction construction;
@@ -22,6 +23,7 @@ public class ConstrucktionModule implements Weighted {
 	public ConstrucktionModule(Module module, Construction construction) {
 		this.module = module;
 		this.construction = construction;
+		this.system = this;
 	}
 	
 	/* 
@@ -50,6 +52,14 @@ public class ConstrucktionModule implements Weighted {
 	
 	public void system(ConstrucktionModule cm) {
 		this.system = cm;
+	}
+
+	/* 
+	 * @see TZ.System.Annotations.AnnotationWrapper#info()
+	 */
+	@Override
+	public Construction info() {
+		return this.construction;
 	}
 
 }

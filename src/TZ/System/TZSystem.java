@@ -62,44 +62,39 @@ public class TZSystem {
 	}
 	
 	public static String program() {
-		return TZSystem.getSystem().fsProgram();
+		return TZSystem.getSystem().sysProgram();
 	}
 	
 	public static String machineProgram() {
-		return TZSystem.getSystem().fsMachineProgram();
+		return TZSystem.getSystem().sysMachineProgram();
 	}
 	
 	public static String nameToID(String name) {
-		return TZSystem.getSystem().fsNameToID(name);
+		return TZSystem.getSystem().sysNameToID(name);
 	}
 	
 	public static Module getModule(String name) {
 		return TZSystem.getSystem().sysGetModule(name);
 	}
 	
-
-	
-	public static void invoke(String function, Object... parameters) {
-		TZSystem.getSystem().sysInvoke(function, parameters);
+	public static<type> type construction(String name) {
+		return TZSystem.getSystem().sysConstruction(name);
 	}
+	
 	
 	protected List<Module> classes;
 	protected Map<String, ConstrucktionModule> constructions;
 	protected List<Module> modules;
-	protected Cache<List<CallState>> invokes;
 	protected String program;
 	
 	// temp module
 	protected Module module;
 	
-	public TZSystem() {
-		this.invokes = new Cache<List<CallState>>("system-invoke");
-	}
-	
 	public void sysExecute(String program) {
 		try {
 			this.program = program;
 			this.sysConstruction();
+			this.sysConstructioning();
 			
 			TZMessage.out("Install system...");
 			this.sysInstall();
@@ -211,6 +206,14 @@ public class TZSystem {
 		});
 	}
 	
+	public void sysConstructioning() {
+		this.constructions.forEach((s, c) -> {
+			if (c.info().init().length() == 0) {
+				c.system().module().reflect().call(c.info().init());
+			}
+		});
+	}
+	
 	public void sysModules() {
 		this.modules = new ArrayList<Module>(128);
 		
@@ -312,31 +315,21 @@ public class TZSystem {
 		}
 	}
 	
-	public void sysInvoke(String function, Object... parameters) {
-		List<CallState> invokes = this.invokes.get(function);
-		if (invokes == null) {
-			invokes = new ArrayList<CallState>(8);
-			for (Module module : this.modules) {
-				CallState call = Reflects.getInvoke(module.reflect(), function);
-				if (call.length() != 0) invokes.add(call);
-			}
-			this.invokes.cache(function, invokes);
-		}
-		for (CallState call : invokes) {
-			call.call(parameters);
-		}
-	}
-	
-	public String fsProgram() {
+	public String sysProgram() {
 		return this.program;
 	}
 	
-	public String fsMachineProgram() {
-		return this.fsNameToID(this.program);
+	public String sysMachineProgram() {
+		return this.sysNameToID(this.program);
 	}
 	
-	public String fsNameToID(String name) {
+	public String sysNameToID(String name) {
 		return name.replaceAll(" ", "-").toLowerCase();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public<type> type sysConstruction(String name) {
+		return (type)this.constructions.get(name).system().module().reflect().instantiate().getReflect();
 	}
 	
 }

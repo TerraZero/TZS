@@ -28,18 +28,25 @@ public class FileSystem implements FileSystemConstruction {
 		FileSystem.get("[default]", "test");
 	}
 	
-	public static FileSystem construction;
+	private static FileSystemConstruction construction;
+	
+	public static FileSystemConstruction construction() {
+		if (FileSystem.construction == null) {
+			FileSystem.construction = TZSystem.construction("filesystem");
+		}
+		return FileSystem.construction;
+	}
 	
 	public static Fid get(String name) {
-		return FileSystem.construction.fsGet(null, name, null);
+		return FileSystem.construction().fsGet(null, name, null);
 	}
 	
 	public static Fid get(String context, String name) {
-		return FileSystem.construction.fsGet(context, name, null);
+		return FileSystem.construction().fsGet(context, name, null);
 	}
 	
 	public static Fid get(String context, String name, String dir) {
-		return FileSystem.construction.fsGet(context, name, dir);
+		return FileSystem.construction().fsGet(context, name, dir);
 	}
 	
 	public static Fid getExist(String context, String name) {

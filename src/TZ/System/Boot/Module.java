@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import TZ.System.TZSystem;
+import TZ.System.Annotations.AnnotationWrapper;
 import TZ.System.Annotations.Info;
 import TZ.System.Lists.Weighted;
 import TZ.System.Reflect.Reflect;
@@ -20,7 +21,7 @@ import TZ.System.Reflect.Reflect;
  * @identifier TZ.Reflect.Boot
  *
  */
-public class Module implements Weighted {
+public class Module implements Weighted, AnnotationWrapper<Info> {
 	
 	public static String getNameFromFile(String name) {
 		return name.substring(0, name.length() - 6);

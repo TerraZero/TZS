@@ -25,4 +25,6 @@ public @interface Construction {
 	
 	public boolean system() default false;
 	
+	public String init() default "";
+	
 }
