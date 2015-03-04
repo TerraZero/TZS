@@ -1,11 +1,10 @@
-package TZ.System.Boot;
+package TZ.System;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import TZ.System.TZSystem;
 import TZ.System.Annotations.AnnotationWrapper;
 import TZ.System.Annotations.Info;
 import TZ.System.Lists.Weighted;

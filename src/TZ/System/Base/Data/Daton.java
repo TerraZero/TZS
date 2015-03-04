@@ -3,10 +3,10 @@ package TZ.System.Base.Data;
 import java.util.List;
 import java.util.Map;
 
+import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.InitFunction;
-import TZ.System.Boot.Module;
 import TZ.System.Mechnic.Mechnic;
 import TZ.System.Mechnic.MechnicCreator;
 

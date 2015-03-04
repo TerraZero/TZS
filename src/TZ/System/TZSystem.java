@@ -10,9 +10,6 @@ import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Annotations.Functions.ExitFunction;
 import TZ.System.Annotations.Functions.InitFunction;
-import TZ.System.Boot.BootLoader;
-import TZ.System.Boot.ConstrucktionModule;
-import TZ.System.Boot.Module;
 import TZ.System.File.Fid;
 import TZ.System.Lists.Lists;
 import TZ.System.Reflect.Exception.ReflectException;
@@ -159,7 +156,7 @@ public class TZSystem {
 	}
 	
 	public void sysConstruction() {
-		this.classes = new BootLoader().boots();
+		this.classes = new TZSystemLoader().boots();
 		Map<String, List<ConstrucktionModule>> constructions = new HashMap<String, List<ConstrucktionModule>>();
 		this.constructions = new HashMap<String, ConstrucktionModule>();
 		

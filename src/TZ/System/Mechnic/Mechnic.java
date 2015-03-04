@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import TZ.System.Module;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
-import TZ.System.Boot.Module;
 
 /**
  * 

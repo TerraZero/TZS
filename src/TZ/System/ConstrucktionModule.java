@@ -1,4 +1,4 @@
-package TZ.System.Boot;
+package TZ.System;
 
 import TZ.System.Annotations.AnnotationWrapper;
 import TZ.System.Annotations.Construction;

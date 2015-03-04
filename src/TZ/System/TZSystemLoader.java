@@ -1,4 +1,4 @@
-package TZ.System.Boot;
+package TZ.System;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +21,12 @@ import javax.swing.JOptionPane;
  * @identifier TZ.Reflect.Boot
  *
  */
-public class BootLoader {
+public class TZSystemLoader {
 	
 	public static void main(String[] args) {
-		BootLoader l = new BootLoader();
+		TZSystemLoader l = new TZSystemLoader();
 		List<Module> boots = l.boots();
-		BootLoader.out(boots, "");
+		TZSystemLoader.out(boots, "");
 		JOptionPane.showMessageDialog(null, "ende");
 	}
 	
