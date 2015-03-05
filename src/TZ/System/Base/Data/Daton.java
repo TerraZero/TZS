@@ -20,7 +20,7 @@ import TZ.System.Mechnic.MechnicCreator;
  * @identifier TZ.System.Base.Data
  *
  */
-@Info
+@Info(dependencies = {"Mechnic"})
 public class Daton {
 	
 	public static void main(String[] args) {

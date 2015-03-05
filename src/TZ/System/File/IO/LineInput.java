@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import TZ.System.TZMessage;
+import TZ.System.Construction.MessageSystem;
 import TZ.System.File.Fid;
 
 /**
@@ -72,7 +72,7 @@ public class LineInput extends FidInput implements LineReader {
 	}
 	
 	public void exception(Exception e) {
-		TZMessage.out(e.toString());
+		MessageSystem.out(e.toString());
 	}
 
 }

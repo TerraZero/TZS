@@ -1,8 +1,7 @@
-package TZ.System.Construction.Install;
+package TZ.System.Construction;
 
 import java.io.File;
 
-import TZ.System.TZMessage;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.File.Fid;
@@ -62,12 +61,12 @@ public class InstallSystem implements InstallSystemConstruction {
 	 */
 	@Override
 	public Fid isInstallFid(String[] files) {
-		TZMessage.out("Search info file:");
+		MessageSystem.out("Search info file:");
 		for (int i = 0; i < files.length; i++) {
 			Fid install = new Fid(files[i]);
-			TZMessage.quest(install + " ...");
+			MessageSystem.quest(install + " ...");
 			if (install.isExist()) return install;
-			TZMessage.respond("not found");
+			MessageSystem.respond("not found");
 		}
 		return null;
 	}
@@ -78,21 +77,21 @@ public class InstallSystem implements InstallSystemConstruction {
 	@Override
 	public void isInstalling(Fid install) {
 		if (install == null) {
-			TZMessage.out("Installing...");
+			MessageSystem.out("Installing...");
 			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
-			TZMessage.quest("Create info file: " + install);
+			MessageSystem.quest("Create info file: " + install);
 			if (install.create()) {
-				TZMessage.respond("Success");
+				MessageSystem.respond("Success");
 			} else {
-				TZMessage.respond("Failed");
+				MessageSystem.respond("Failed");
 				this.isInstallAbort();
 			}
 			//InfoFile info = new InfoFile(install);
 			// TODO 
-			TZMessage.out("Completed...");
+			MessageSystem.out("Completed...");
 		} else {
-			TZMessage.respond("found");
-			TZMessage.out("Info file: " + install);
+			MessageSystem.respond("found");
+			MessageSystem.out("Info file: " + install);
 		}
 	}
 
@@ -101,7 +100,7 @@ public class InstallSystem implements InstallSystemConstruction {
 	 */
 	@Override
 	public void isInstallAbort() {
-		TZMessage.out("Install abort!");
+		MessageSystem.out("Install abort!");
 		TZSystem.exit(1);
 	}
 

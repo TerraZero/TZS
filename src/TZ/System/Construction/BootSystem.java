@@ -1,10 +1,9 @@
-package TZ.System.Construction.Boot;
+package TZ.System.Construction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import TZ.System.Module;
-import TZ.System.TZMessage;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Functions.BootFunction;
@@ -61,10 +60,10 @@ public class BootSystem implements BootSystemConstruction {
 	 */
 	@Override
 	public List<Module> bsBootModules(List<Module> classes) {
-		TZMessage.out("Build modules ...");
+		MessageSystem.out("Build modules ...");
 		List<Module> modules = new ArrayList<Module>(128);
 		
-		TZMessage.out("Load modules ...");
+		MessageSystem.out("Load modules ...");
 		for (Module classe : classes) {
 			if (classe.isModule()) {
 				modules.add(classe);
@@ -78,7 +77,7 @@ public class BootSystem implements BootSystemConstruction {
 	 */
 	@Override
 	public void bsBootModulesSort(List<Module> modules) {
-		TZMessage.out("Sort modules ...");
+		MessageSystem.out("Sort modules ...");
 		Lists.sortASC(modules);
 	}
 
@@ -87,13 +86,13 @@ public class BootSystem implements BootSystemConstruction {
 	 */
 	@Override
 	public List<Module> bsBootModulesDependencies(List<Module> modules) {
-		TZMessage.out("Build dependencies ...");
+		MessageSystem.out("Build dependencies ...");
 		List<Module> dependencyTree = new ArrayList<Module>(modules.size());
 		
 		for (Module module : modules) {
 			this.bsBootBuildModuleDependencies(dependencyTree, module);
 		}
-		TZMessage.out("Complete ...");
+		MessageSystem.out("Complete ...");
 		return dependencyTree;
 	}
 
@@ -102,31 +101,31 @@ public class BootSystem implements BootSystemConstruction {
 	 */
 	@Override
 	public void bsBootBuildModuleDependencies(List<Module> dependencyTree, Module module) {
-		TZMessage.out("Check '" + module.module() + "' ...");
+		MessageSystem.out("Check '" + module.module() + "' ...");
 		if (module.isChecked()) {
-			TZMessage.respond("already checked");
+			MessageSystem.respond("already checked");
 		} else {
 			boolean check = true;
 			// WHEN module have dependencies THAN add dependencies first
 			if (module.info().dependencies().length != 0) {
 				for (String dependency :  module.info().dependencies()) {
-					TZMessage.quest("\t'" + module.module() + "' dependence on '" + dependency + "'");
+					MessageSystem.quest("\t'" + module.module() + "' dependence on '" + dependency + "'");
 					Module dm = TZSystem.getModule(dependency);
 					// WHEN module is NOT available
 					if (dm == null) {
-						TZMessage.respond("not found");
+						MessageSystem.respond("not found");
 						check = false;
 						break;
 					// WHEN module have already been checked THAN ignore module
 					} else if (!dm.isDependencies()) {
-						TZMessage.respond("found");
+						MessageSystem.respond("found");
 						this.bsBootBuildModuleDependencies(dependencyTree, dm);
 					} else {
-						TZMessage.respond("already load");
+						MessageSystem.respond("already load");
 					}
 				}
 			} else {
-				TZMessage.respond("no dependencies");
+				MessageSystem.respond("no dependencies");
 			}
 			module.dependencies(check);
 			module.checked(true);

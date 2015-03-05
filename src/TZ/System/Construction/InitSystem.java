@@ -1,4 +1,4 @@
-package TZ.System.Construction.Init;
+package TZ.System.Construction;
 
 import java.util.List;
 

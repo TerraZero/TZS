@@ -1,9 +1,8 @@
-package TZ.System.Construction.Exit;
+package TZ.System.Construction;
 
 import java.util.List;
 
 import TZ.System.Module;
-import TZ.System.TZMessage;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Functions.ExitFunction;
@@ -45,7 +44,7 @@ public class ExitSystem implements ExitSystemConstruction {
 	 */
 	@Override
 	public void esExiting(int code, List<Module> modules, List<Module> classes) {
-		TZMessage.out("Exiting ...");
+		MessageSystem.out("Exiting ...");
 		if (modules != null) {
 			for (Module module : modules) {
 				module.reflect().call(ExitFunction.class, TZSystem.EXIT_ID, module, classes);
@@ -58,7 +57,7 @@ public class ExitSystem implements ExitSystemConstruction {
 	 */
 	@Override
 	public void esExit(int code) {
-		TZMessage.out("Exit");
+		MessageSystem.out("Exit");
 		System.exit(code);
 	}
 

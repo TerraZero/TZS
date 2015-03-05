@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import TZ.System.Annotations.Construction;
-import TZ.System.Construction.Boot.BootSystem;
-import TZ.System.Construction.Exit.ExitSystem;
-import TZ.System.Construction.Init.InitSystem;
-import TZ.System.Construction.Install.InstallSystem;
+import TZ.System.Construction.BootSystem;
+import TZ.System.Construction.ExitSystem;
+import TZ.System.Construction.InitSystem;
+import TZ.System.Construction.InstallSystem;
+import TZ.System.Construction.MessageSystem;
 import TZ.System.File.Fid;
 import TZ.System.Lists.Lists;
 import TZ.System.Reflect.Exception.ReflectException;
@@ -53,10 +54,6 @@ public class TZSystem {
 		TZSystem.getSystem().sysExit(code);
 	}
 	
-	public static Module activeModule() {
-		return TZSystem.getSystem().module;
-	}
-	
 	public static String program() {
 		return TZSystem.getSystem().sysProgram();
 	}
@@ -82,9 +79,6 @@ public class TZSystem {
 	protected Map<String, ConstrucktionModule> constructions;
 	protected List<Module> modules;
 	protected String program;
-	
-	// temp module
-	protected Module module;
 	
 	public void sysExecute(String program) {
 		try {
@@ -159,19 +153,19 @@ public class TZSystem {
 	}
 	
 	public void sysInstall() {
-		TZMessage.out("Install system...");
+		MessageSystem.out("Install system...");
 		String[] files = InstallSystem.installFiles(TZSystem.machineProgram() + ".info.txt", new File("").getAbsolutePath());
 		Fid install = InstallSystem.installFid(files);
 		InstallSystem.installing(install);
 	}
 	
 	public void sysBooting() {
-		TZMessage.out("Loading modules...");
+		MessageSystem.out("Loading modules...");
 		this.modules = BootSystem.bootModules(this.classes);
 		BootSystem.bootModulesSort(this.modules);
 		this.modules = BootSystem.bootModulesDependencies(this.modules);
 		
-		TZMessage.out("Booting modules...");
+		MessageSystem.out("Booting modules...");
 		BootSystem.booting(this.modules, this.classes);
 		
 		// devel
@@ -179,7 +173,7 @@ public class TZSystem {
 	}
 	
 	public void sysIniting() {
-		TZMessage.out("Initiating modules...");
+		MessageSystem.out("Initiating modules...");
 		InitSystem.initing(this.modules, this.classes);
 	}
 	
@@ -199,7 +193,7 @@ public class TZSystem {
 	
 	public void develOut(List<Module> modules) {
 		for (Module module : modules) {
-			TZMessage.out(module.module());
+			MessageSystem.out(module.module());
 		}
 	}
 	
