@@ -42,8 +42,8 @@ public class ConstructionWrapper implements Weighted, AnnotationWrapper<Construc
 		return this.system;
 	}
 	
-	public void system(ConstructionWrapper cm) {
-		this.system = cm;
+	public void system(ConstructionWrapper cw) {
+		this.system = cw;
 	}
 
 	/* 

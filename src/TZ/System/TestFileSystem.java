@@ -15,7 +15,7 @@ import TZ.System.File.Fid;
  * @identifier TZ.System
  *
  */
-//@Construction(name = "filesystem")
+@Construction(name = "filesystem")
 public class TestFileSystem implements FileSystemConstruction {
 
 	public static void construction() {

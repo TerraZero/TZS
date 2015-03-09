@@ -161,7 +161,7 @@ public class TZSystem {
 	public void sysConstructioning() {
 		this.constructions.forEach((s, c) -> {
 			if (c.system().info().init().length() != 0) {
-				c.system().boot().reflect().call(c.info().init());
+				c.system().boot().reflect().call(c.system().info().init());
 			}
 		});
 	}
