@@ -115,12 +115,12 @@ public class BootSystem implements BootSystemConstruction {
 					Module dm = TZSystem.getModule(dependency);
 					// WHEN module is NOT available
 					if (dm == null) {
-						MessageSystem.respond("not found");
+						MessageSystem.respond("not found", MessageType.WARNING);
 						check = false;
 						break;
 					// WHEN module have already been checked THAN ignore module
 					} else if (!dm.isAvailable()) {
-						MessageSystem.respond("found");
+						MessageSystem.respond("found", MessageType.SUCCESS);
 						this.bsBootBuildModuleDependencies(dependencyTree, dm);
 					} else {
 						MessageSystem.respond("already load");

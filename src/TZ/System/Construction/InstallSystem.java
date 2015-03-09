@@ -66,7 +66,7 @@ public class InstallSystem implements InstallSystemConstruction {
 			Fid install = new Fid(files[i]);
 			MessageSystem.quest(install + " ...");
 			if (install.isExist()) return install;
-			MessageSystem.respond("not found");
+			MessageSystem.respond("not found", MessageType.NOTICE);
 		}
 		return null;
 	}
@@ -81,16 +81,16 @@ public class InstallSystem implements InstallSystemConstruction {
 			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
 			MessageSystem.quest("Create info file: " + install);
 			if (install.create()) {
-				MessageSystem.respond("Success");
+				MessageSystem.respond("Created", MessageType.SUCCESS);
 			} else {
-				MessageSystem.respond("Failed");
+				MessageSystem.respond("Not created", MessageType.ERROR);
 				this.isInstallAbort();
 			}
 			//InfoFile info = new InfoFile(install);
 			// TODO 
 			MessageSystem.out("Completed...");
 		} else {
-			MessageSystem.respond("found");
+			MessageSystem.respond("found", MessageType.OK);
 			MessageSystem.out("Info file: " + install);
 		}
 	}
