@@ -2,6 +2,7 @@ package TZ.System.Construction;
 
 import java.util.List;
 
+import TZ.System.Boot;
 import TZ.System.Module;
 
 /**
@@ -16,7 +17,7 @@ import TZ.System.Module;
  */
 public interface BootSystemConstruction {
 
-	public List<Module> bsBootModules(List<Module> classes);
+	public List<Module> bsBootModules(List<Boot> boots);
 	
 	public void bsBootModulesSort(List<Module> modules);
 	
@@ -24,7 +25,7 @@ public interface BootSystemConstruction {
 	
 	public void bsBootBuildModuleDependencies(List<Module> dependencyTree, Module module);
 	
-	public void bsBooting(List<Module> modules, List<Module> classes);
+	public void bsBooting(List<Module> modules, List<Boot> boots);
 	
 	public Module bsBootModule();
 	

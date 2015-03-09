@@ -14,14 +14,14 @@ import TZ.System.Lists.Weighted;
  * @identifier TZ.System.Boot
  *
  */
-public class ConstrucktionModule implements Weighted, AnnotationWrapper<Construction> {
+public class ConstructionWrapper implements Weighted, AnnotationWrapper<Construction> {
 
-	protected Module module;
+	protected Boot boot;
 	protected Construction construction;
-	protected ConstrucktionModule system;
+	protected ConstructionWrapper system;
 	
-	public ConstrucktionModule(Module module, Construction construction) {
-		this.module = module;
+	public ConstructionWrapper(Boot boot, Construction construction) {
+		this.boot = boot;
 		this.construction = construction;
 		this.system = this;
 	}
@@ -34,23 +34,15 @@ public class ConstrucktionModule implements Weighted, AnnotationWrapper<Construc
 		return this.construction.weight();
 	}
 	
-	public String name() {
-		return this.construction.name();
+	public Boot boot() {
+		return this.boot;
 	}
 	
-	public boolean isSystem() {
-		return this.construction.system();
-	}
-	
-	public Module module() {
-		return this.module;
-	}
-	
-	public ConstrucktionModule system() {
+	public ConstructionWrapper system() {
 		return this.system;
 	}
 	
-	public void system(ConstrucktionModule cm) {
+	public void system(ConstructionWrapper cm) {
 		this.system = cm;
 	}
 

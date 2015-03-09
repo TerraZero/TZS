@@ -89,8 +89,8 @@ public class TZSystem {
 	}
 	
 	
-	protected List<Module> classes;
-	protected Map<String, ConstrucktionModule> constructions;
+	protected List<Boot> boots;
+	protected Map<String, ConstructionWrapper> constructions;
 	protected List<Module> modules;
 	protected String program;
 	
@@ -114,20 +114,20 @@ public class TZSystem {
 	}
 	
 	public void sysConstruction() {
-		this.classes = new TZSystemLoader().boots();
-		Map<String, List<ConstrucktionModule>> constructions = new HashMap<String, List<ConstrucktionModule>>();
-		this.constructions = new HashMap<String, ConstrucktionModule>();
+		this.boots = new TZSystemLoader().boots();
+		Map<String, List<ConstructionWrapper>> constructions = new HashMap<String, List<ConstructionWrapper>>();
+		this.constructions = new HashMap<String, ConstructionWrapper>();
 		
 		// build construction map
-		for (Module classe : this.classes) {
-			Construction construction = classe.reflect().getAnnotation(Construction.class);
+		for (Boot boot : this.boots) {
+			Construction construction = boot.reflect().getAnnotation(Construction.class);
 			if (construction != null) {
-				List<ConstrucktionModule> sc = constructions.get(construction.name());
+				List<ConstructionWrapper> sc = constructions.get(construction.name());
 				if (sc == null) {
-					sc = new ArrayList<ConstrucktionModule>(8);
+					sc = new ArrayList<ConstructionWrapper>(8);
 					constructions.put(construction.name(), sc);
 				}
-				sc.add(new ConstrucktionModule(classe, construction));
+				sc.add(new ConstructionWrapper(boot, construction));
 			}
 		}
 		
@@ -136,10 +136,10 @@ public class TZSystem {
 			// sort list after weight
 			Lists.sortASC(l);
 			
-			ConstrucktionModule system = null;
+			ConstructionWrapper system = null;
 			// get system module
-			for (ConstrucktionModule m : l) {
-				if (m.isSystem()) {
+			for (ConstructionWrapper m : l) {
+				if (m.info().system()) {
 					system = m;
 					break;
 				}
@@ -148,22 +148,20 @@ public class TZSystem {
 			
 			// WHEN are other constructions available THAN get the last
 			if (l.size() != 0) {
-				ConstrucktionModule active = l.get(l.size() - 1);
+				ConstructionWrapper active = l.get(l.size() - 1);
 				active.system(system);
-				this.constructions.put(active.name(), active);
+				this.constructions.put(active.info().name(), active);
 			// ELSE get the system construction
 			} else {
-				this.constructions.put(system.name(), system);
+				this.constructions.put(system.info().name(), system);
 			}
 		});
 	}
 	
 	public void sysConstructioning() {
 		this.constructions.forEach((s, c) -> {
-			System.out.println(c.name());
-			System.out.println(c.system().info().init());
 			if (c.system().info().init().length() != 0) {
-				c.system().module().reflect().call(c.info().init());
+				c.system().boot().reflect().call(c.info().init());
 			}
 		});
 	}
@@ -177,12 +175,12 @@ public class TZSystem {
 	
 	public void sysBooting() {
 		MessageSystem.out("Loading modules...");
-		this.modules = BootSystem.bootModules(this.classes);
+		this.modules = BootSystem.bootModules(this.boots);
 		BootSystem.bootModulesSort(this.modules);
 		this.modules = BootSystem.bootModulesDependencies(this.modules);
 		
 		MessageSystem.out("Booting modules...");
-		BootSystem.booting(this.modules, this.classes);
+		BootSystem.booting(this.modules, this.boots);
 		
 		// devel
 		this.develOut(this.modules);
@@ -190,12 +188,12 @@ public class TZSystem {
 	
 	public void sysIniting() {
 		MessageSystem.out("Initiating modules...");
-		InitSystem.initing(this.modules, this.classes);
+		InitSystem.initing(this.modules, this.boots);
 	}
 	
 	public Module sysGetModule(String name) {
 		for (Module module : this.modules) {
-			if (module.module().equals(name)) {
+			if (module.name().equals(name)) {
 				return module;
 			}
 		}
@@ -203,13 +201,13 @@ public class TZSystem {
 	}
 	
 	public void sysExit(int code) {
-		ExitSystem.exiting(code, this.modules, this.classes);
+		ExitSystem.exiting(code, this.modules, this.boots);
 		ExitSystem.exit(code);
 	}
 	
 	public void develOut(List<Module> modules) {
 		for (Module module : modules) {
-			MessageSystem.out(module.module());
+			MessageSystem.out(module.name());
 		}
 	}
 	
@@ -227,7 +225,7 @@ public class TZSystem {
 	
 	@SuppressWarnings("unchecked")
 	public<type> type sysConstruction(String name) {
-		return (type)this.constructions.get(name).system().module().reflect().instantiate().getReflect();
+		return (type)this.constructions.get(name).system().boot().reflect().instantiate().getReflect();
 	}
 	
 }

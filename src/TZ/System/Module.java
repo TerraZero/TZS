@@ -8,7 +8,6 @@ import java.util.function.BiConsumer;
 import TZ.System.Annotations.AnnotationWrapper;
 import TZ.System.Annotations.Info;
 import TZ.System.Lists.Weighted;
-import TZ.System.Reflect.Reflect;
 
 /**
  * 
@@ -30,7 +29,7 @@ public class Module implements Weighted, AnnotationWrapper<Info> {
 		List<Module> moduleAnnots = new ArrayList<Module>(16);
 		
 		for (Module module : modules) {
-			Annotation annot = module.reflect().getAnnotation(annotation);
+			Annotation annot = module.boot().reflect().getAnnotation(annotation);
 			if (annot != null) {
 				moduleAnnots.add(module);
 			}
@@ -40,64 +39,35 @@ public class Module implements Weighted, AnnotationWrapper<Info> {
 	
 	public static<annot extends Annotation> void forAnnotation(List<Module> modules, Class<annot> annotation, BiConsumer<Module, annot> consumer) {
 		for (Module module : modules) {
-			annot annot = module.reflect().getAnnotation(annotation);
+			annot annot = module.boot().reflect().getAnnotation(annotation);
 			if (annot != null) {
 				consumer.accept(module, annot);
 			}
 		}
 	}
 
-	protected String name;
-	protected String path;
-	protected Reflect reflect;
+	protected Boot boot;
 	protected Info info;
-	protected boolean dependencies;
+	
+	// dependencies
+	protected boolean available;
 	protected boolean checked;
 	
-	public Module(String name, String path) {
-		this.name = name;
-		this.path = path;
-	}
-	
-	public String name() {
-		return this.name;
-	}
-	
-	public String fullname() {
-		return this.name + ".class";
-	}
-	
-	public String file() {
-		return this.path + "/" + this.fullname();
-	}
-	
-	public String id() {
-		String file = this.path + "/" + this.name;
-		return file.replace('/',  '.');
-	}
-	
-	public String path() {
-		return this.path;
+	public Module(Boot boot) {
+		this.boot = boot;
 	}
 	
 	public int weight() {
 		return this.info().weight();
 	}
 	
-	public Reflect reflect() {
-		if (this.reflect == null) {
-			this.reflect = new Reflect(this.id());
-		}
-		return this.reflect;
-	}
-	
-	public void reflect(Reflect reflect) {
-		this.reflect = reflect;
+	public Boot boot() {
+		return this.boot;
 	}
 	
 	public Info info() {
 		if (this.info == null) {
-			this.info = this.reflect().getAnnotation(Info.class);
+			this.info = this.boot.reflect().getAnnotation(Info.class);
 		}
 		return this.info;
 	}
@@ -106,36 +76,36 @@ public class Module implements Weighted, AnnotationWrapper<Info> {
 		return this.info() != null;
 	}
 	
-	public String module() {
-		String module = this.info().name();
-		if (module.length() == 0) {
-			module = this.name();
+	public String name() {
+		String name = this.info().name();
+		if (name.length() == 0) {
+			name = this.boot.name();
 		}
-		return module;
+		return name;
 	}
 	
-	public String moduleID() {
-		return TZSystem.nameToID(this.module());
+	public String id() {
+		return TZSystem.nameToID(this.name());
 	}
 	
 	/**
-	 * @return
-	 * 		TRUE - if module have all dependencies available
+	 * @return 
+	 * 		TRUE - IF module have all dependencies available
 	 */
-	public boolean isDependencies() {
-		return this.dependencies;
+	public boolean isAvailable() {
+		return this.available;
 	}
 	
-	public void dependencies(boolean dependencies) {
-		this.dependencies = dependencies;
+	public void available(boolean available) {
+		this.available = available;
 	}
 	
 	public boolean isChecked() {
 		return this.checked;
 	}
 	
-	public void checked(boolean checked) {
-		this.checked = checked;
+	public void checked() {
+		this.checked = true;
 	}
 	
 }

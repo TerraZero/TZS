@@ -3,9 +3,11 @@ package TZ.System.Construction;
 import java.util.ArrayList;
 import java.util.List;
 
+import TZ.System.Boot;
 import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
+import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.BootFunction;
 import TZ.System.Lists.Lists;
 
@@ -31,8 +33,8 @@ public class BootSystem implements BootSystemConstruction {
 		return BootSystem.construction;
 	}
 	
-	public static List<Module> bootModules(List<Module> classes) {
-		return BootSystem.construction().bsBootModules(classes);
+	public static List<Module> bootModules(List<Boot> boots) {
+		return BootSystem.construction().bsBootModules(boots);
 	}
 	
 	public static void bootModulesSort(List<Module> modules) {
@@ -43,8 +45,8 @@ public class BootSystem implements BootSystemConstruction {
 		return BootSystem.construction().bsBootModulesDependencies(modules);
 	}
 	
-	public static void booting(List<Module> modules, List<Module> classes) {
-		BootSystem.construction().bsBooting(modules, classes);
+	public static void booting(List<Module> modules, List<Boot> boots) {
+		BootSystem.construction().bsBooting(modules, boots);
 	}
 	
 	public static Module bootModule() {
@@ -59,14 +61,14 @@ public class BootSystem implements BootSystemConstruction {
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBootModules(java.util.List)
 	 */
 	@Override
-	public List<Module> bsBootModules(List<Module> classes) {
+	public List<Module> bsBootModules(List<Boot> boots) {
 		MessageSystem.out("Build modules ...");
 		List<Module> modules = new ArrayList<Module>(128);
 		
 		MessageSystem.out("Load modules ...");
-		for (Module classe : classes) {
-			if (classe.isModule()) {
-				modules.add(classe);
+		for (Boot boot : boots) {
+			if (boot.reflect().hasAnnotation(Info.class)) {
+				modules.add(new Module(boot));
 			}
 		}
 		return modules;
@@ -101,7 +103,7 @@ public class BootSystem implements BootSystemConstruction {
 	 */
 	@Override
 	public void bsBootBuildModuleDependencies(List<Module> dependencyTree, Module module) {
-		MessageSystem.out("Check '" + module.module() + "' ...");
+		MessageSystem.out("Check '" + module.name() + "' ...");
 		if (module.isChecked()) {
 			MessageSystem.respond("already checked");
 		} else {
@@ -109,7 +111,7 @@ public class BootSystem implements BootSystemConstruction {
 			// WHEN module have dependencies THAN add dependencies first
 			if (module.info().dependencies().length != 0) {
 				for (String dependency :  module.info().dependencies()) {
-					MessageSystem.quest("\t'" + module.module() + "' dependence on '" + dependency + "'");
+					MessageSystem.quest("\t'" + module.name() + "' dependence on '" + dependency + "'");
 					Module dm = TZSystem.getModule(dependency);
 					// WHEN module is NOT available
 					if (dm == null) {
@@ -117,7 +119,7 @@ public class BootSystem implements BootSystemConstruction {
 						check = false;
 						break;
 					// WHEN module have already been checked THAN ignore module
-					} else if (!dm.isDependencies()) {
+					} else if (!dm.isAvailable()) {
 						MessageSystem.respond("found");
 						this.bsBootBuildModuleDependencies(dependencyTree, dm);
 					} else {
@@ -127,8 +129,8 @@ public class BootSystem implements BootSystemConstruction {
 			} else {
 				MessageSystem.respond("no dependencies");
 			}
-			module.dependencies(check);
-			module.checked(true);
+			module.available(check);
+			module.checked();
 			dependencyTree.add(module);
 		}
 	}
@@ -137,10 +139,10 @@ public class BootSystem implements BootSystemConstruction {
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBooting(java.util.List)
 	 */
 	@Override
-	public void bsBooting(List<Module> modules, List<Module> classes) {
+	public void bsBooting(List<Module> modules, List<Boot> boots) {
 		for (Module module : modules) {
 			this.module = module;
-			module.reflect().call(BootFunction.class, TZSystem.BOOT_ID, module, classes);
+			module.boot().reflect().call(BootFunction.class, TZSystem.BOOT_ID, module, boots);
 		}
 	}
 

@@ -86,7 +86,7 @@ public class MessageSystem implements MessageSystemConstruction {
 	 */
 	@Override
 	public void msModuleOut(Module module, String out) {
-		System.out.println(module.module() + ": " + out);
+		System.out.println(module.name() + ": " + out);
 	}
 	
 }
