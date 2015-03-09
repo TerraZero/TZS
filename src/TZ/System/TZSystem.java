@@ -131,7 +131,7 @@ public class TZSystem {
 			}
 		}
 		
-		// execute construction map
+		// execute construction map 
 		constructions.forEach((s, l) -> {
 			// sort list after weight
 			Lists.sortASC(l);
