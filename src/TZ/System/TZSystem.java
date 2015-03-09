@@ -9,7 +9,6 @@ import java.util.Map;
 import TZ.System.Annotations.Construction;
 import TZ.System.Construction.BootSystem;
 import TZ.System.Construction.ExitSystem;
-import TZ.System.Construction.FileSystem;
 import TZ.System.Construction.InitSystem;
 import TZ.System.Construction.InstallSystem;
 import TZ.System.Construction.MessageSystem;
@@ -36,7 +35,6 @@ public class TZSystem {
 	
 	public static void main(String[] args) {
 		TZSystem.execute("test");
-		FileSystem.get("test");
 		TZSystem.exit(0);
 	}
 	
@@ -225,7 +223,7 @@ public class TZSystem {
 	
 	@SuppressWarnings("unchecked")
 	public<type> type sysConstruction(String name) {
-		return (type)this.constructions.get(name).system().boot().reflect().instantiate().getReflect();
+		return (type)this.constructions.get(name).boot().reflect().instantiate().getReflect();
 	}
 	
 }
