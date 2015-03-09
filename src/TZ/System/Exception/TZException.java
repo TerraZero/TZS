@@ -1,4 +1,4 @@
-package TZ.System;
+package TZ.System.Exception;
 
 /**
  * 

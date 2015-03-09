@@ -1,6 +1,7 @@
-package TZ.System.Reflect.Exception;
+package TZ.System.Exception;
 
-import TZ.System.TZException;
+import TZ.System.Reflect.Reflect;
+
 
 /**
  * 
@@ -15,6 +16,8 @@ import TZ.System.TZException;
 public class ReflectException extends TZException {
 
 	private static final long serialVersionUID = 1L;
+	
+	protected Reflect reflect;
 
 	public ReflectException(String message, String debug) {
 		super(message, debug);
@@ -22,6 +25,15 @@ public class ReflectException extends TZException {
 
 	public ReflectException(Exception e, String message, String debug) {
 		super(e, message, debug);
+	}
+	
+	public ReflectException(Exception e, String message, String debug, Reflect reflect) {
+		super(e, message, debug);
+		this.reflect = reflect;
+	}
+	
+	public Reflect reflect() {
+		return this.reflect;
 	}
 
 }

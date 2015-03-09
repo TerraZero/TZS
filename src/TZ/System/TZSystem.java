@@ -9,12 +9,14 @@ import java.util.Map;
 import TZ.System.Annotations.Construction;
 import TZ.System.Construction.BootSystem;
 import TZ.System.Construction.ExitSystem;
+import TZ.System.Construction.FileSystem;
 import TZ.System.Construction.InitSystem;
 import TZ.System.Construction.InstallSystem;
 import TZ.System.Construction.MessageSystem;
+import TZ.System.Exception.ReflectException;
+import TZ.System.Exception.TZException;
 import TZ.System.File.Fid;
 import TZ.System.Lists.Lists;
-import TZ.System.Reflect.Exception.ReflectException;
 
 /**
  * 
@@ -34,6 +36,7 @@ public class TZSystem {
 	
 	public static void main(String[] args) {
 		TZSystem.execute("test");
+		FileSystem.get("test");
 		TZSystem.exit(0);
 	}
 	
@@ -46,8 +49,19 @@ public class TZSystem {
 		return TZSystem.system;
 	}
 
-	public static void execute(String programm) {
-		TZSystem.getSystem().sysExecute(programm);
+	/**
+	 * Invoke the TZS 
+	 * 
+	 * @param program - the program name
+	 * @return IF execute successful THAN NULL ELSE the TZException
+	 */
+	public static TZException execute(String program) {
+		try {
+			TZSystem.getSystem().sysExecute(program);
+		} catch (TZException e) {
+			return e;
+		}
+		return null;
 	}
 	
 	public static void exit(int code) {
@@ -146,6 +160,8 @@ public class TZSystem {
 	
 	public void sysConstructioning() {
 		this.constructions.forEach((s, c) -> {
+			System.out.println(c.name());
+			System.out.println(c.system().info().init());
 			if (c.system().info().init().length() != 0) {
 				c.system().module().reflect().call(c.info().init());
 			}
