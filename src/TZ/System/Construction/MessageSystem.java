@@ -39,11 +39,15 @@ public class MessageSystem implements MessageSystemConstruction {
 	}
 	
 	public static void respond(String out) {
-		MessageSystem.construction().msRespond(out);
+		MessageSystem.construction().msRespond(out, MessageType.OK, true);
 	}
 	
-	public static void respond(String out, boolean status) {
-		MessageSystem.construction().msRespond(out, status);
+	public static void respond(String out, MessageType type) {
+		MessageSystem.construction().msRespond(out, type, true);
+	}
+	
+	public static void respond(String out, MessageType type, boolean status) {
+		MessageSystem.construction().msRespond(out, type, status);
 	}
 	
 	
@@ -65,19 +69,11 @@ public class MessageSystem implements MessageSystemConstruction {
 	}
 
 	/* 
-	 * @see TZ.System.Construction.MessageSystemConstruction#msRespond(java.lang.String)
-	 */
-	@Override
-	public void msRespond(String respond) {
-		this.msRespond(respond, true);
-	}
-
-	/* 
 	 * @see TZ.System.Construction.MessageSystemConstruction#msRespond(java.lang.String, boolean)
 	 */
 	@Override
-	public void msRespond(String respond, boolean status) {
-		if (status) respond = "\t[" + respond.toUpperCase() + "]";
+	public void msRespond(String respond, MessageType type, boolean status) {
+		if (status) respond = "\t[" + type + ": " + respond.toUpperCase() + "]";
 		System.out.println(respond);
 	}
 
@@ -88,5 +84,15 @@ public class MessageSystem implements MessageSystemConstruction {
 	public void msModuleOut(Module module, String out) {
 		System.out.println(module.name() + ": " + out);
 	}
+	
+}
+
+enum MessageType {
+	
+	OK,
+	SUCCESS,
+	NOTICE,
+	WARNING,
+	ERROR, 
 	
 }
