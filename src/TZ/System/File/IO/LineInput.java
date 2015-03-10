@@ -17,7 +17,7 @@ import TZ.System.File.Fid;
  * @identifier TZ.System.File.IO
  *
  */
-public class LineInput extends FidInput implements LineReader {
+public class LineInput extends FidInputOutput implements LineReader {
 	
 	protected BufferedReader in;
 
@@ -72,7 +72,7 @@ public class LineInput extends FidInput implements LineReader {
 	}
 	
 	public void exception(Exception e) {
-		MessageSystem.out(e.toString());
+		MessageSystem.exception(e);
 	}
 
 }

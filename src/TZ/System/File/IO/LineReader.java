@@ -10,7 +10,7 @@ package TZ.System.File.IO;
  * @identifier TZ.System.File.IO
  *
  */
-public interface LineReader extends FidReader {
+public interface LineReader extends FidIO {
 
 	public String readLine();
 	

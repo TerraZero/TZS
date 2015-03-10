@@ -3,6 +3,7 @@ package TZ.System.Construction;
 import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
+import TZ.System.Exception.TZException;
 
 /**
  * 
@@ -54,6 +55,14 @@ public class MessageSystem implements MessageSystemConstruction {
 		MessageSystem.construction().msRespond(out, type, status);
 	}
 	
+	public static void exception(Exception e) {
+		MessageSystem.construction().msException(e);
+	}
+	
+	public static void exception(TZException e) {
+		MessageSystem.construction().msException(e);
+	}
+	
 	
 
 	/* 
@@ -91,6 +100,27 @@ public class MessageSystem implements MessageSystemConstruction {
 	@Override
 	public void msModuleOut(Module module, String out) {
 		this.msOut(module.name() + ": " + out);
+	}
+
+	/* 
+	 * @see TZ.System.Construction.MessageSystemConstruction#msException(java.lang.Exception)
+	 */
+	@Override
+	public void msException(Exception e) {
+		System.err.println("MessageSystem:");
+		e.printStackTrace();
+	}
+
+	/* 
+	 * @see TZ.System.Construction.MessageSystemConstruction#msException(TZ.System.Exception.TZException)
+	 */
+	@Override
+	public void msException(TZException e) {
+		System.out.println(e.getMessage());
+		e.printStackTrace();
+		if (e.exception() != null) {
+			e.printStackTrace();
+		}
 	}
 	
 }

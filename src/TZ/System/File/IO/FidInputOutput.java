@@ -12,11 +12,11 @@ import TZ.System.File.Fid;
  * @identifier TZ.System.File.IO
  *
  */
-public abstract class FidInput implements FidReader {
+public abstract class FidInputOutput implements FidIO {
 	
 	protected Fid fid;
 	
-	public FidInput(Fid fid) {
+	public FidInputOutput(Fid fid) {
 		this.fid = fid;
 	}
 

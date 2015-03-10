@@ -1,6 +1,7 @@
 package TZ.System.Construction;
 
 import TZ.System.Module;
+import TZ.System.Exception.TZException;
 
 /**
  * 
@@ -21,5 +22,9 @@ public interface MessageSystemConstruction {
 	public void msRespond(String respond, MessageType type, boolean status);
 	
 	public void msModuleOut(Module module, String out);
+	
+	public void msException(Exception e);
+	
+	public void msException(TZException e);
 	
 }

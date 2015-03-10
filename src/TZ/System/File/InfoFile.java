@@ -3,9 +3,8 @@ package TZ.System.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import TZ.System.TZSystem;
-import TZ.System.Construction.FileSystem;
 import TZ.System.File.IO.LineInput;
+import TZ.System.File.IO.LineOutput;
 
 /**
  * 
@@ -18,36 +17,47 @@ import TZ.System.File.IO.LineInput;
  *
  */
 public class InfoFile {
-	
-	public static void main(String[] args) {
-		TZSystem.execute("InfoFileTest");
-		Fid fid = FileSystem.get("test.info.txt");
-		System.out.println(fid);
-		InfoFile file = new InfoFile(fid);
-		Map<String, String> map = file.load();
-		map.forEach((k, v) -> System.out.println(k + " : " + v));
-	}
 
 	protected Fid fid;
 	protected Map<String, String> infos;
+	
 	protected LineInput input;
+	protected LineOutput output;
 	
 	public InfoFile(Fid fid) {
 		this.fid = fid;
+		this.input = new LineInput(this.fid);
+		this.output = new LineOutput(this.fid);
 	}
 	
 	public Fid fid() {
 		return this.fid;
 	}
 	
-	public Map<String, String> load() {
-		return this.load(false);
+	public Map<String, String> info() {
+		if (this.infos == null) {
+			this.load();
+		}
+		return this.infos;
 	}
 	
-	public Map<String, String> load(boolean force) {
+	public String info(String key) {
+		return this.info().get(key);
+	}
+	
+	public InfoFile info(String key, String value) {
+		this.info().put(key, value);
+		return this;
+	}
+	
+	public InfoFile load() {
+		this.load(false);
+		return this;
+	}
+	
+	public InfoFile load(boolean force) {
 		if (this.infos == null || force) {
 			this.infos = new HashMap<String, String>();
-			this.input = new LineInput(this.fid);
 			
 			input.open();
 			String line = null;
@@ -56,7 +66,7 @@ public class InfoFile {
 			}
 			input.close();
 		}
-		return this.infos;
+		return this;
 	}
 	
 	protected void loading(String line) {
@@ -70,6 +80,19 @@ public class InfoFile {
 				}
 			}
 		}
+	}
+	
+	public InfoFile save() {
+		this.output.open();
+		this.infos.forEach((k, v) -> {
+			this.saving(k, v);
+		});
+		this.output.close();
+		return this;
+	}
+	
+	protected void saving(String key, String value) {
+		this.output.writeLine(key + " = " + value);
 	}
 	
 }
