@@ -12,9 +12,11 @@ import TZ.System.Construction.ExitSystem;
 import TZ.System.Construction.InitSystem;
 import TZ.System.Construction.InstallSystem;
 import TZ.System.Construction.MessageSystem;
+import TZ.System.Construction.MessageType;
 import TZ.System.Exception.ReflectException;
 import TZ.System.Exception.TZException;
 import TZ.System.File.Fid;
+import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
 
 /**
@@ -35,6 +37,7 @@ public class TZSystem {
 	
 	public static void main(String[] args) {
 		TZSystem.execute("test");
+		System.out.println(TZSystem.info().info("mechnic"));
 		TZSystem.exit(0);
 	}
 	
@@ -86,11 +89,16 @@ public class TZSystem {
 		return TZSystem.getSystem().sysConstruction(name);
 	}
 	
+	public static InfoFile info() {
+		return TZSystem.getSystem().sysInfo();
+	}
+	
 	
 	protected List<Boot> boots;
 	protected Map<String, ConstructionWrapper> constructions;
 	protected List<Module> modules;
 	protected String program;
+	protected InfoFile info;
 	
 	public void sysExecute(String program) {
 		try {
@@ -168,7 +176,15 @@ public class TZSystem {
 		MessageSystem.out("Install system...");
 		String[] files = InstallSystem.installFiles(TZSystem.machineProgram() + ".info.txt", new File("").getAbsolutePath());
 		Fid install = InstallSystem.installFid(files);
-		InstallSystem.installing(install);
+		if (install == null) {
+			this.info = InstallSystem.installing(install);
+			MessageSystem.quest("Install profile...");
+			InstallSystem.installProfile(this.info);
+			this.info.save();
+			MessageSystem.respond(MessageType.SUCCESS);
+		} else {
+			this.info = InstallSystem.installing(install);
+		}
 	}
 	
 	public void sysBooting() {
@@ -224,6 +240,10 @@ public class TZSystem {
 	@SuppressWarnings("unchecked")
 	public<type> type sysConstruction(String name) {
 		return (type)this.constructions.get(name).boot().reflect().instantiate().getReflect();
+	}
+	
+	public InfoFile sysInfo() {
+		return this.info;
 	}
 	
 }

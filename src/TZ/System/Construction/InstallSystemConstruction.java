@@ -1,6 +1,7 @@
 package TZ.System.Construction;
 
 import TZ.System.File.Fid;
+import TZ.System.File.InfoFile;
 
 /**
  * 
@@ -18,7 +19,9 @@ public interface InstallSystemConstruction {
 	
 	public Fid isInstallFid(String[] files);
 	
-	public void isInstalling(Fid install);
+	public InfoFile isInstalling(Fid install);
+	
+	public void isInstallProfile(InfoFile info);
 	
 	public void isInstallAbort();
 	

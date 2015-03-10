@@ -5,6 +5,7 @@ import java.io.File;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.File.Fid;
+import TZ.System.File.InfoFile;
 
 /**
  * 
@@ -36,8 +37,12 @@ public class InstallSystem implements InstallSystemConstruction {
 		return InstallSystem.construction().isInstallFid(files);
 	}
 	
-	public static void installing(Fid install) {
-		InstallSystem.construction().isInstalling(install);
+	public static void installProfile(InfoFile info) {
+		InstallSystem.construction().isInstallProfile(info);
+	}
+	
+	public static InfoFile installing(Fid install) {
+		return InstallSystem.construction().isInstalling(install);
 	}
 	
 	
@@ -75,7 +80,7 @@ public class InstallSystem implements InstallSystemConstruction {
 	 * @see TZ.System.Construction.Install.InstallSystemConstruction#isInstalling(TZ.System.File.Fid)
 	 */
 	@Override
-	public void isInstalling(Fid install) {
+	public InfoFile isInstalling(Fid install) {
 		if (install == null) {
 			MessageSystem.out("Installing...");
 			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
@@ -86,13 +91,12 @@ public class InstallSystem implements InstallSystemConstruction {
 				MessageSystem.respond("Not created", MessageType.ERROR);
 				this.isInstallAbort();
 			}
-			//InfoFile info = new InfoFile(install);
-			// TODO 
 			MessageSystem.out("Completed...");
 		} else {
 			MessageSystem.respond("found", MessageType.OK);
 			MessageSystem.out("Info file: " + install);
 		}
+		return new InfoFile(install);
 	}
 
 	/* 
@@ -102,6 +106,15 @@ public class InstallSystem implements InstallSystemConstruction {
 	public void isInstallAbort() {
 		MessageSystem.out("Install abort!");
 		TZSystem.exit(1);
+	}
+
+	/* 
+	 * @see TZ.System.Construction.InstallSystemConstruction#isInstallFile(TZ.System.File.InfoFile)
+	 */
+	@Override
+	public void isInstallProfile(InfoFile info) {
+		info.info("program", TZSystem.program());
+		info.info("base-path", info.fid().file().getParentFile().getAbsolutePath());
 	}
 
 }

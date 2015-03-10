@@ -124,13 +124,3 @@ public class MessageSystem implements MessageSystemConstruction {
 	}
 	
 }
-
-enum MessageType {
-	
-	OK,
-	SUCCESS,
-	NOTICE,
-	WARNING,
-	ERROR, 
-	
-}
