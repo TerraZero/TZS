@@ -81,7 +81,7 @@ public class InstallSystem implements InstallSystemConstruction {
 			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
 			MessageSystem.quest("Create info file: " + install);
 			if (install.create()) {
-				MessageSystem.respond("Created", MessageType.SUCCESS);
+				MessageSystem.respond(MessageType.SUCCESS);
 			} else {
 				MessageSystem.respond("Not created", MessageType.ERROR);
 				this.isInstallAbort();

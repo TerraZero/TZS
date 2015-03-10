@@ -38,6 +38,10 @@ public class MessageSystem implements MessageSystemConstruction {
 		MessageSystem.construction().msQuest(out);
 	}
 	
+	public static void respond(MessageType type) {
+		MessageSystem.construction().msRespond(null, type, true);
+	}
+	
 	public static void respond(String out) {
 		MessageSystem.construction().msRespond(out, MessageType.OK, true);
 	}
@@ -73,8 +77,12 @@ public class MessageSystem implements MessageSystemConstruction {
 	 */
 	@Override
 	public void msRespond(String respond, MessageType type, boolean status) {
-		if (status) respond = "\t[" + type + ": " + respond.toUpperCase() + "]";
-		System.out.println(respond);
+		if (respond == null) {
+			respond = (status ? "\t[" + type + "]" : type.toString());
+		} else if (status) {
+			respond = "\t[" + type + ": " + respond.toUpperCase() + "]";
+		}
+		this.msOut(respond);
 	}
 
 	/* 
@@ -82,7 +90,7 @@ public class MessageSystem implements MessageSystemConstruction {
 	 */
 	@Override
 	public void msModuleOut(Module module, String out) {
-		System.out.println(module.name() + ": " + out);
+		this.msOut(module.name() + ": " + out);
 	}
 	
 }
