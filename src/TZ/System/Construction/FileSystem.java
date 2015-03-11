@@ -1,8 +1,8 @@
 package TZ.System.Construction;
 
-import java.io.File;
 import java.nio.file.Paths;
 
+import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Base.Tokens;
@@ -18,7 +18,7 @@ import TZ.System.File.Fid;
  * @identifier TZ.System.File
  *
  */
-@Construction(name = "filesystem", system = true, init = "construction")
+@Construction(name = "filesystem", system = true)
 public class FileSystem implements FileSystemConstruction {
 	
 	public static final String DEFAULT_SYSTEM_TOKEN = "[default]";
@@ -26,7 +26,8 @@ public class FileSystem implements FileSystemConstruction {
 	
 	public static void main(String[] args) {
 		TZSystem.execute("TestProgram");
-		FileSystem.get("[default]", "test");
+		Fid fid = FileSystem.get("modules", "test");
+		System.out.println(fid.file());
 	}
 	
 	private static FileSystemConstruction construction;
@@ -50,6 +51,10 @@ public class FileSystem implements FileSystemConstruction {
 		return FileSystem.construction().fsGet(context, name, dir);
 	}
 	
+	public static Fid get(Module module, String name) {
+		return FileSystem.construction().fsGet("modules/" + module.id(), name, null);
+	}
+	
 	public static Fid getExist(String context, String name) {
 		return FileSystem.get(context, name, null);
 	}
@@ -62,15 +67,19 @@ public class FileSystem implements FileSystemConstruction {
 	
 	protected Tokens systemtokens;
 	protected Tokens contexttokens;
+	protected String base;
 	
 	public FileSystem() {
 		this.systemtokens = new Tokens();
 		this.contexttokens = new Tokens();
+		this.base = TZSystem.info().info("base-path");
 		
-		this.fsAddSystemToken(false, new File(TZSystem.program()).getAbsolutePath(), FileSystem.DEFAULT_SYSTEM_TOKEN);
+		// system tokens
+		this.fsAddSystemToken(false, this.base + "/" + TZSystem.program(), FileSystem.DEFAULT_SYSTEM_TOKEN);
 		this.fsAddSystemToken(System.getProperty("user.home"), "user");
 		this.fsAddSystemToken(false, System.getProperty("user.home"), "~");
 		
+		// context tokens
 		this.fsAddContextToken(false, "default", FileSystem.DEFAULT_CONTEXT_TOKEN);
 	}
 	

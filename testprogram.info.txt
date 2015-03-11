@@ -1,2 +1,2 @@
 base-path = /home/terrazero/eclipsesource/TZS
-program = test
+program = TestProgram

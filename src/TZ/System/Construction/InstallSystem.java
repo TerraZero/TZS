@@ -1,9 +1,12 @@
 package TZ.System.Construction;
 
 import java.io.File;
+import java.util.List;
 
+import TZ.System.Boot;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
+import TZ.System.Annotations.Install;
 import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
 
@@ -37,8 +40,8 @@ public class InstallSystem implements InstallSystemConstruction {
 		return InstallSystem.construction().isInstallFid(files);
 	}
 	
-	public static void installProfile(InfoFile info) {
-		InstallSystem.construction().isInstallProfile(info);
+	public static void installProfile(InfoFile info, List<Boot> boots) {
+		InstallSystem.construction().isInstallProfile(info, boots);
 	}
 	
 	public static InfoFile installing(Fid install) {
@@ -112,9 +115,14 @@ public class InstallSystem implements InstallSystemConstruction {
 	 * @see TZ.System.Construction.InstallSystemConstruction#isInstallFile(TZ.System.File.InfoFile)
 	 */
 	@Override
-	public void isInstallProfile(InfoFile info) {
+	public void isInstallProfile(InfoFile info, List<Boot> boots) {
 		info.info("program", TZSystem.program());
 		info.info("base-path", info.fid().file().getParentFile().getAbsolutePath());
+		
+		// invoke install profiles
+		Boot.forAnnotations(boots, Install.class, (wrapper) -> {
+			wrapper.value().reflect().call(wrapper.info().function(), info);
+		});
 	}
 
 }

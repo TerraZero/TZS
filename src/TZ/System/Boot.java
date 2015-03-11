@@ -3,9 +3,10 @@ package TZ.System;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 
+import TZ.System.Annotations.InfoWrapper;
 import TZ.System.Reflect.Reflect;
 
 /**
@@ -19,6 +20,17 @@ import TZ.System.Reflect.Reflect;
  *
  */
 public class Boot {
+	
+	public static<annot extends Annotation> void forAnnotations(List<Boot> boots, Class<annot> annotation, Consumer<InfoWrapper<Boot, annot>> consumer) {
+		for (Boot boot : boots) {
+			annot annot = boot.reflect().getAnnotation(annotation);
+			if (annot != null) {
+				consumer.accept(new InfoWrapper<Boot, annot>(boot, annot));
+			}
+		}
+	}
+	
+	
 	
 	public static String getZipName(String zipname) {
 		String[] parts = zipname.split("/");
@@ -35,17 +47,6 @@ public class Boot {
 	
 	public static String getFileName(String filename) {
 		return filename.substring(0, filename.length() - 6);
-	}
-	
-	
-	
-	public static<annot extends Annotation> void forAnnotation(List<Boot> boots, Class<annot> annotation, BiConsumer<Boot, annot> consumer) {
-		for (Boot boot : boots) {
-			annot annot = boot.reflect().getAnnotation(annotation);
-			if (annot != null) {
-				consumer.accept(boot, annot);
-			}
-		}
 	}
 	
 	

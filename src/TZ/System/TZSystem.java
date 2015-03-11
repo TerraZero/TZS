@@ -37,8 +37,6 @@ public class TZSystem {
 	
 	public static void main(String[] args) {
 		TZSystem.execute("test");
-		System.out.println(TZSystem.info().info("mechnic"));
-		TZSystem.exit(0);
 	}
 	
 	private static TZSystem system;
@@ -179,7 +177,7 @@ public class TZSystem {
 		if (install == null) {
 			this.info = InstallSystem.installing(install);
 			MessageSystem.quest("Install profile...");
-			InstallSystem.installProfile(this.info);
+			InstallSystem.installProfile(this.info, this.boots);
 			this.info.save();
 			MessageSystem.respond(MessageType.SUCCESS);
 		} else {

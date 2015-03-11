@@ -28,9 +28,9 @@ public class Mechnic {
 	public static void bootMechnic(String id, Module module, List<Boot> boots) {
 		Mechnic.mechnic = new Mechnic();
 		
-		Boot.forAnnotation(boots, Mech.class, (b, a) -> {
-			b.reflect().instantiate();
-			Mechnic.mechnic.mechnicRegister(a.mechnic(), b.reflect().getReflect());
+		Boot.forAnnotations(boots, Mech.class, (wrapper) -> {
+			wrapper.value().reflect().instantiate();
+			Mechnic.mechnic.mechnicRegister(wrapper.info().mechnic(), wrapper.value().reflect().getReflect());
 		});
 	}
 	
