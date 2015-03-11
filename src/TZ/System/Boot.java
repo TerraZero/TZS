@@ -30,6 +30,14 @@ public class Boot {
 		}
 	}
 	
+	public static<implement> void forImplement(List<Boot> boots, Class<implement> implement, Consumer<Boot> consumer) {
+		for (Boot boot : boots) {
+			if (boot.reflect().implement(implement)) {
+				consumer.accept(boot);
+			}
+		}
+	}
+	
 	
 	
 	public static String getZipName(String zipname) {

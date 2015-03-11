@@ -28,4 +28,13 @@ public class Strings {
 		return false;
 	}
 	
+	public static String[] merge(String s1, String... s2) {
+		String[] array = new String[s2.length + 1];
+		array[0] = s1;
+		for (int i = 0; i < s2.length; i++) {
+			array[i + 1] = s2[i];  
+		}
+		return array;
+	}
+	
 }

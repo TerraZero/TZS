@@ -2,6 +2,7 @@ package TZ.System.Base.Data;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import TZ.System.Module;
 import TZ.System.TZSystem;
@@ -79,6 +80,27 @@ public class Daton {
 		return values;
 	}
 	
+	public boolean has(String key) {
+		if (this.isList()) {
+			return this.values.get(key) != null;
+		}
+		return false;
+	}
+	
+	public Daton has(String key, String whenNot) {
+		if (this.isList() && this.values.get(key) == null) {
+			this.add(key, whenNot);
+		}
+		return this;
+	}
+	
+	public Daton has(String key, Daton whenNot) {
+		if (this.isList() && this.values.get(key) == null) {
+			this.add(key, whenNot);
+		}
+		return this;
+	}
+	
 	public Daton get(String key) {
 		return this.values.get(key);
 	}
@@ -93,6 +115,34 @@ public class Daton {
 	
 	public boolean isNull() {
 		return this.value == null && this.values == null;
+	}
+	
+	public boolean isTrue() {
+		return this.value.equals("true");
+	}
+	
+	public boolean isFalse() {
+		return this.value.equals("false");
+	}
+	
+	public int toInt() {
+		return Integer.parseInt(this.value);
+	}
+	
+	public void forData(BiConsumer<String, Daton> consumer) {
+		this.values.forEach((s, d) -> {
+			if (s.startsWith("#")) {
+				consumer.accept(s, d);
+			}
+		});
+	}
+	
+	public void forNonData(BiConsumer<String, Daton> consumer) {
+		this.values.forEach((s, d) -> {
+			if (!s.startsWith("#")) {
+				consumer.accept(s, d);
+			}
+		});
 	}
 	
 	public int length() {

@@ -32,8 +32,7 @@ public class Reflects {
 		return types;
 	}
 
-	public static boolean isParameter(Class<?>[] parameters,
-			Class<?>[] definition) {
+	public static boolean isParameter(Class<?>[] parameters, Class<?>[] definition) {
 		return Reflects.isParameter(parameters, definition, false);
 	}
 
@@ -209,6 +208,10 @@ public class Reflects {
 			}
 		}
 		return new CallState(reflect, callmethods);
+	}
+	
+	public static boolean isImplement(Class<?> base, Class<?> implement) {
+		return implement.isAssignableFrom(base);
 	}
 
 }

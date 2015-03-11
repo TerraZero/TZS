@@ -25,10 +25,6 @@ public @interface Info {
 	
 	public String name() default "";
 	
-	// system
-	
-	public String construction() default "";
-	
 	// info
 	
 	public String[] dependencies() default {};

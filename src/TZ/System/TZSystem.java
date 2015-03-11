@@ -193,9 +193,6 @@ public class TZSystem {
 		
 		MessageSystem.out("Booting modules...");
 		BootSystem.booting(this.modules, this.boots);
-		
-		// devel
-		this.develOut(this.modules);
 	}
 	
 	public void sysIniting() {

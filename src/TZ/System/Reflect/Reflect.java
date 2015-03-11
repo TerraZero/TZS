@@ -202,4 +202,10 @@ public class Reflect {
 		return this.reflectClass.isAnnotationPresent(annotation);
 	}
 	
+	
+	
+	public boolean implement(Class<?> implement) {
+		return Reflects.isImplement(this.reflectClass, implement);
+	}
+	
 }
