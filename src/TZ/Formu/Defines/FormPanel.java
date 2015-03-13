@@ -39,9 +39,9 @@ public class FormPanel implements FieldDefine<JPanel> {
 	 */
 	@Override
 	public void execute(JComponent parent, JPanel field, Daton data) {
-		Daton weight = data.get("#weight");
-		if (weight != null) {
-			field.setSize(weight.toInt(), field.getHeight());
+		Daton width = data.get("#width");
+		if (width != null) {
+			field.setSize(width.toInt(), field.getHeight());
 		}
 	}
 

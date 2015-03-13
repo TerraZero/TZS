@@ -42,6 +42,7 @@ public class Form {
 	
 	public void execute() {
 		this.data.has("#type", "panel");
+		this.data.add("#width", "50");
 		this.panel = Formu.build(null, this.data);
 	}
 	

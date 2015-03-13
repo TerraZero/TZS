@@ -44,7 +44,7 @@ public class Daton {
 	protected Map<String, Daton> values;
 	
 	public Daton() {
-		
+		this.values = Daton.creator.mechnic(null);
 	}
 	
 	public Daton(String value) {

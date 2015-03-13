@@ -211,7 +211,7 @@ public class Reflects {
 	}
 	
 	public static boolean isImplement(Class<?> base, Class<?> implement) {
-		return implement.isAssignableFrom(base);
+		return !base.isInterface() && !base.isAnnotation() && !base.isEnum() && implement.isAssignableFrom(base);
 	}
 
 }

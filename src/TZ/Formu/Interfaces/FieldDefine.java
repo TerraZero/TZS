@@ -25,7 +25,7 @@ public interface FieldDefine<field> extends Weighted {
 	}
 	
 	public default field create(String type, Daton data) {
-		return Mechnic.get("formu", type);
+		return Mechnic.getContext("formu", type);
 	}
 	
 	public void execute(JComponent parent, field field, Daton data);
