@@ -42,7 +42,7 @@ public class Form {
 	
 	public void execute() {
 		this.data.has("#type", "panel");
-		this.data.add("#width", "50");
+		this.data.add("#bounds").add("-width", "50").add("-x", "100").add("-y", "50").add("-height", "200");
 		this.panel = Formu.build(null, this.data);
 	}
 	

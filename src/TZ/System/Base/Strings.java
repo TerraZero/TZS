@@ -1,5 +1,9 @@
 package TZ.System.Base;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
  * 
@@ -35,6 +39,16 @@ public class Strings {
 			array[i + 1] = s2[i];  
 		}
 		return array;
+	}
+	
+	public static String[] merge(String[] a1, String[] a2) {
+		List<String> list = new ArrayList<String>(Arrays.asList(a1));
+		for (int i = 0; i < a2.length; i++) {
+			if (list.indexOf(a2) != -1) {
+				list.add(a2[i]);
+			}
+		}
+		return list.toArray(new String[list.size()]);
 	}
 	
 }

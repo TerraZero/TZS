@@ -61,6 +61,22 @@ public class Daton {
 		return this.value;
 	}
 	
+	public String get(String value, String fallback) {
+		Daton get = this.values.get(value);
+		if (get == null) {
+			return fallback;
+		}
+		return get.value();
+	}
+	
+	public int getInt(String value, int fallback) {
+		Daton get = this.values.get(value);
+		if (get == null) {
+			return fallback;
+		}
+		return get.toInt();
+	}
+	
 	public Daton add(String key) {
 		return this.add(key, new Daton());
 	}

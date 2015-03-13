@@ -14,7 +14,6 @@ import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Functions.InitFunction;
 import TZ.System.Base.Data.Daton;
-import TZ.System.Lists.Lists;
 import TZ.System.Mechnic.Mechnic;
 
 /**
@@ -39,12 +38,11 @@ public class Formu {
 		s.execute();
 		frame.getContentPane().setLayout(null);
 		JPanel panel = s.steps.get(0).panel();
-		panel.setSize(panel.getWidth(), 50);
 		frame.add(panel);
 		frame.setVisible(true);
 	}
 	
-	private static Map<String, List<FieldDefine<?>>> defines;
+	private static Map<String, FieldDefine<?>> defines;
 
 	@InitFunction
 	public static void initFormu(String id, Module module, List<Boot> boots) {
@@ -53,19 +51,7 @@ public class Formu {
 		Boot.forImplement(boots, FieldDefine.class, (boot) -> {
 			boot.reflect().instantiate();
 			FieldDefine<?> define = boot.reflect().getReflect();
-			List<FieldDefine<?>> list = Formu.defines.get(define.type());
-			
-			if (list == null) {
-				list = Mechnic.get("list");
-				Formu.defines.put(define.type(), list);
-			}
-			
-			list.add(define);
-		});
-		
-		// Sort defines
-		Formu.defines.forEach((s, l) -> {
-			Lists.sortASC(l);
+			Formu.defines.put(define.type(), define);
 		});
 	}
 	
@@ -77,24 +63,38 @@ public class Formu {
 	 * Build component
 	 * @param parent
 	 * @param data
+	 * @see buildType(String, JComponent, Daton)
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static<field extends JComponent, type> type build(JComponent parent, Daton data) {
+	@SuppressWarnings("unchecked")
+	public static<field extends JComponent> field build(JComponent parent, Daton data) {
 		String type = "label";
 		if (data.has("#type")) {
 			type = data.get("#type").value();
 		}
 		
-		// get field defines for this type
-		List<FieldDefine<field>> define = (List)Formu.defines.get(type);
+		// get field define for this type
+		FieldDefine<field> define = (FieldDefine<field>)Formu.defines.get(type);
 		
-		// create component
-		field field = define.get(define.size() - 1).create(type, data);
+		// create the component
+		field field = define.create(type, data);
+		
+		Formu.buildType(type, parent, data, field);
+		
+		return field;
+	}
+	
+	@SuppressWarnings({"unchecked"})
+	public static<field extends JComponent, type> void buildType(String type, JComponent parent, Daton data, field field) {
+		// get field define for this type
+		FieldDefine<field> define = (FieldDefine<field>)Formu.defines.get(type);
+		
+		// invoke extends
+		if (define.extended() != null) {
+			Formu.buildType(define.extended(), parent, data, field);
+		}
 		
 		// invoke field defines
-		define.forEach((d) -> {
-			d.execute(parent, field, data);
-		});
+		define.execute(parent, field, data);
 		
 		// add child to parent
 		if (parent != null) {
@@ -107,7 +107,7 @@ public class Formu {
 				Formu.build(field, child);
 			});
 		}
-		return (type)field;
+		data.has("#executed", "true");
 	}
 	
 }
