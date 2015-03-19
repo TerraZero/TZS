@@ -3,10 +3,9 @@ package TZ.System.Construction;
 import java.io.File;
 import java.util.List;
 
-import TZ.System.Boot;
+import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
-import TZ.System.Annotations.Install;
 import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
 
@@ -40,8 +39,9 @@ public class InstallSystem implements InstallSystemConstruction {
 		return InstallSystem.construction().isInstallFid(files);
 	}
 	
-	public static void installProfile(InfoFile info, List<Boot> boots) {
-		InstallSystem.construction().isInstallProfile(info, boots);
+	public static void installProfile(InfoFile info, List<Module> module) {
+		InstallSystem.construction().isInstallProfile(info, module);
+		InstallSystem.construction().isInstall(info, module);
 	}
 	
 	public static InfoFile installing(Fid install) {
@@ -56,8 +56,9 @@ public class InstallSystem implements InstallSystemConstruction {
 	@Override
 	public String[] isInstallFiles(String program, String root) {
 		String[] files = {
-			root + "/" + program,
-			System.getProperty("user.home") + "/" + program,
+			root + "/" + program + ".info.txt",
+			root + "/" + program + "/" + program + ".info.txt",
+			System.getProperty("user.home") + "/" + program + ".info.txt",
 			root + "/tzs.info.txt",
 			System.getProperty("user.home") + "/tzs.info.txt",
 		};
@@ -86,7 +87,15 @@ public class InstallSystem implements InstallSystemConstruction {
 	public InfoFile isInstalling(Fid install) {
 		if (install == null) {
 			MessageSystem.out("Installing...");
-			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram() + ".info.txt");
+			install = new Fid(new File("").getAbsolutePath() + "/" + TZSystem.machineProgram());
+			MessageSystem.quest("Create base dir: " + install);
+			if (install.createDirs()) {
+				MessageSystem.respond(MessageType.SUCCESS);
+			} else {
+				MessageSystem.respond("Not created", MessageType.ERROR);
+				this.isInstallAbort();
+			}
+			install = install.cd(TZSystem.machineProgram() + ".info.txt");
 			MessageSystem.quest("Create info file: " + install);
 			if (install.create()) {
 				MessageSystem.respond(MessageType.SUCCESS);
@@ -100,6 +109,15 @@ public class InstallSystem implements InstallSystemConstruction {
 			MessageSystem.out("Info file: " + install);
 		}
 		return new InfoFile(install);
+	}
+	
+	public void isInstall(InfoFile info, List<Module> modules) {
+		// invoke installs
+		for (Module module : modules) {
+			if (module.info().install().length() != 0) {
+				module.boot().reflect().call(module.info().install(), info, module);
+			}
+		}
 	}
 
 	/* 
@@ -115,14 +133,16 @@ public class InstallSystem implements InstallSystemConstruction {
 	 * @see TZ.System.Construction.InstallSystemConstruction#isInstallFile(TZ.System.File.InfoFile)
 	 */
 	@Override
-	public void isInstallProfile(InfoFile info, List<Boot> boots) {
+	public void isInstallProfile(InfoFile info, List<Module> modules) {
 		info.info("program", TZSystem.program());
 		info.info("base-path", info.fid().file().getParentFile().getAbsolutePath());
 		
 		// invoke install profiles
-		Boot.forAnnotations(boots, Install.class, (wrapper) -> {
-			wrapper.value().reflect().call(wrapper.info().function(), info);
-		});
+		for (Module module : modules) {
+			if (module.info().installProfile().length() != 0) {
+				module.boot().reflect().call(module.info().installProfile(), info, module);
+			}
+		}
 	}
 
 }

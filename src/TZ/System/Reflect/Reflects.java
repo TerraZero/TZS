@@ -9,9 +9,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import TZ.System.Annotations.Functions.InvokeFunction;
-import TZ.System.Base.Strings;
-
 /**
  * 
  * @author Terra
@@ -190,21 +187,6 @@ public class Reflects {
 		for (Method method : methods) {
 			if (method.isAnnotationPresent(annotation)) {
 				callmethods.add(method);
-			}
-		}
-		return new CallState(reflect, callmethods);
-	}
-	
-	public static CallState getInvoke(Reflect reflect, String function) {
-		List<Method> callmethods = new ArrayList<Method>(8);
-		Method[] methods = reflect.reflect().getMethods();
-		
-		for (Method method : methods) {
-			if (method.isAnnotationPresent(InvokeFunction.class)) {
-				InvokeFunction invoke = method.getAnnotation(InvokeFunction.class);
-				if (Strings.isIntern(function, invoke.functions())) {
-					callmethods.add(method);
-				}
 			}
 		}
 		return new CallState(reflect, callmethods);

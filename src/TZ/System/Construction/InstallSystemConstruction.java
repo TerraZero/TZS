@@ -2,7 +2,7 @@ package TZ.System.Construction;
 
 import java.util.List;
 
-import TZ.System.Boot;
+import TZ.System.Module;
 import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
 
@@ -24,7 +24,9 @@ public interface InstallSystemConstruction {
 	
 	public InfoFile isInstalling(Fid install);
 	
-	public void isInstallProfile(InfoFile info, List<Boot> boots);
+	public void isInstallProfile(InfoFile info, List<Module> modules);
+	
+	public void isInstall(InfoFile info, List<Module> modules);
 	
 	public void isInstallAbort();
 	

@@ -4,6 +4,7 @@ import java.util.List;
 
 import TZ.System.Boot;
 import TZ.System.Module;
+import TZ.System.File.InfoFile;
 
 /**
  * 
@@ -16,6 +17,8 @@ import TZ.System.Module;
  *
  */
 public interface BootSystemConstruction {
+	
+	public void bsActiveModule(List<Module> modules, InfoFile info);
 
 	public List<Module> bsBootModules(List<Boot> boots);
 	

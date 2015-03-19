@@ -6,7 +6,6 @@ import TZ.System.Boot;
 import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
-import TZ.System.Annotations.Functions.ExitFunction;
 
 /**
  * 
@@ -48,7 +47,9 @@ public class ExitSystem implements ExitSystemConstruction {
 		MessageSystem.out("Exiting ...");
 		if (modules != null) {
 			for (Module module : modules) {
-				module.boot().reflect().call(ExitFunction.class, TZSystem.EXIT_ID, module, boots);
+				if (module.isActive() && module.info().exit().length() != 0) {
+					module.boot().reflect().call(module.info().exit(), TZSystem.EXIT_ID, module, boots);
+				}
 			}
 		}
 	}

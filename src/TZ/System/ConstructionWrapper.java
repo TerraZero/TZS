@@ -1,7 +1,7 @@
 package TZ.System;
 
-import TZ.System.Annotations.AnnotationWrapper;
 import TZ.System.Annotations.Construction;
+import TZ.System.Annotations.Base.AnnotationWrapper;
 import TZ.System.Lists.Weighted;
 
 /**
@@ -14,7 +14,7 @@ import TZ.System.Lists.Weighted;
  * @identifier TZ.System.Boot
  *
  */
-public class ConstructionWrapper implements Weighted, AnnotationWrapper<Construction> {
+public class ConstructionWrapper implements Weighted, AnnotationWrapper<Boot, Construction> {
 
 	protected Boot boot;
 	protected Construction construction;
@@ -52,6 +52,14 @@ public class ConstructionWrapper implements Weighted, AnnotationWrapper<Construc
 	@Override
 	public Construction info() {
 		return this.construction;
+	}
+
+	/* 
+	 * @see TZ.System.Annotations.AnnotationWrapper#value()
+	 */
+	@Override
+	public Boot value() {
+		return this.boot;
 	}
 
 }

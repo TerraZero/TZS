@@ -7,7 +7,6 @@ import java.util.function.BiConsumer;
 import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
-import TZ.System.Annotations.Functions.InitFunction;
 import TZ.System.Mechnic.Mechnic;
 import TZ.System.Mechnic.MechnicCreator;
 
@@ -21,7 +20,7 @@ import TZ.System.Mechnic.MechnicCreator;
  * @identifier TZ.System.Base.Data
  *
  */
-@Info(dependencies = {"Mechnic"})
+@Info(init = "initDaton")
 public class Daton {
 	
 	public static void main(String[] args) {
@@ -35,7 +34,6 @@ public class Daton {
 	
 	protected static MechnicCreator<Map<String, Daton>> creator;
 	
-	@InitFunction
 	public static void initDaton(String id, Module module, List<Module> classes) {
 		Daton.creator = Mechnic.getCreator("daton", "map");
 	}

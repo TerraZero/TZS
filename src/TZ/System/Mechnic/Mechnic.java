@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import TZ.System.Boot;
-import TZ.System.Module;
-import TZ.System.Annotations.Info;
-import TZ.System.Annotations.Functions.BootFunction;
+import TZ.System.Construction.MessageSystem;
+import TZ.System.Construction.MessageType;
 
 /**
  * 
@@ -19,19 +18,19 @@ import TZ.System.Annotations.Functions.BootFunction;
  * @identifier TZ.Mechnic
  *
  */
-@Info(weight = -1000)
 public class Mechnic {
 	
 	private static Mechnic mechnic;
 	
-	@BootFunction
-	public static void bootMechnic(String id, Module module, List<Boot> boots) {
+	public static void bootMechnic(List<Boot> boots) {
 		Mechnic.mechnic = new Mechnic();
 		
 		Boot.forAnnotations(boots, Mech.class, (wrapper) -> {
 			wrapper.value().reflect().instantiate();
 			Mechnic.mechnic.mechnicRegister(wrapper.info().mechnic(), wrapper.value().reflect().getReflect());
 		});
+		
+		MessageSystem.respond(MessageType.SUCCESS);
 	}
 	
 	public static<type> type get(String name, Object... args) {

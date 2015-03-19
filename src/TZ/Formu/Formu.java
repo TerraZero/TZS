@@ -12,7 +12,6 @@ import TZ.System.Boot;
 import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
-import TZ.System.Annotations.Functions.InitFunction;
 import TZ.System.Base.Data.Daton;
 import TZ.System.Mechnic.Mechnic;
 
@@ -26,7 +25,7 @@ import TZ.System.Mechnic.Mechnic;
  * @identifier TZ.Forms
  *
  */
-@Info(name = "Formu", dependencies = {"Mechnic", "Daton"})
+@Info(name = "Formu", dependencies = {"Daton"}, init = "initFormu")
 public class Formu {
 	
 	public static void main(String[] args) {
@@ -44,7 +43,6 @@ public class Formu {
 	
 	private static Map<String, FieldDefine<?>> defines;
 
-	@InitFunction
 	public static void initFormu(String id, Module module, List<Boot> boots) {
 		Formu.defines = Mechnic.getContext("formu", "map");
 		

@@ -1,3 +1,0 @@
-base-path = /home/terrazero/eclipsesource/TZS
-program = test
-mechnic = driver

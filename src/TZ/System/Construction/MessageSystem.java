@@ -99,7 +99,7 @@ public class MessageSystem implements MessageSystemConstruction {
 	 */
 	@Override
 	public void msModuleOut(Module module, String out) {
-		this.msOut(module.name() + ": " + out);
+		this.msOut("\t" + module.name() + ": " + out);
 	}
 
 	/* 

@@ -2,11 +2,13 @@ package TZ.System;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 
-import TZ.System.Annotations.InfoWrapper;
+import TZ.System.Annotations.Base.AnnotationWrapper;
+import TZ.System.Annotations.Base.InfoWrapper;
 import TZ.System.Reflect.Reflect;
 
 /**
@@ -36,6 +38,18 @@ public class Boot {
 				consumer.accept(boot);
 			}
 		}
+	}
+	
+	public static<annot extends Annotation> List<AnnotationWrapper<Boot, annot>> getAnnotations(List<Boot> boots, Class<annot> annotation) {
+		List<AnnotationWrapper<Boot, annot>> list = new ArrayList<AnnotationWrapper<Boot, annot>>(16);
+		
+		for (Boot boot : boots) {
+			annot annot = boot.reflect().getAnnotation(annotation);
+			if (annot != null) {
+				list.add(new InfoWrapper<Boot, annot>(boot, annot));
+			}
+		}
+		return list;
 	}
 	
 	

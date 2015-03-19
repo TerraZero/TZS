@@ -1,4 +1,4 @@
-package TZ.System.Annotations;
+package TZ.System.Annotations.Base;
 
 import java.lang.annotation.Annotation;
 
@@ -12,7 +12,7 @@ import java.lang.annotation.Annotation;
  * @identifier TZ.System.Annotations
  *
  */
-public class InfoWrapper<type, annot extends Annotation> implements AnnotationWrapper<annot> {
+public class InfoWrapper<type, annot extends Annotation> implements AnnotationWrapper<type, annot> {
 	
 	protected type object;
 	protected annot info;

@@ -6,7 +6,6 @@ import TZ.System.Boot;
 import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
-import TZ.System.Annotations.Functions.InitFunction;
 
 /**
  * 
@@ -48,8 +47,12 @@ public class InitSystem implements InitSystemConstruction {
 	@Override
 	public void isIniting(List<Module> modules, List<Boot> boots) {
 		for (Module module : modules) {
-			this.module = module;
-			module.boot().reflect().call(InitFunction.class, TZSystem.INIT_ID, module, boots);
+			if (module.isActive()) {
+				this.module = module;
+				if (module.info().init().length() != 0) {
+					module.boot().reflect().call(module.info().init(), TZSystem.INIT_ID, module, boots);
+				}
+			}
 		}
 	}
 

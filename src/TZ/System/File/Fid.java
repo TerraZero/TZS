@@ -51,6 +51,10 @@ public class Fid {
 		this.dir = dir;
 	}
 	
+	public Fid(Fid root, String... additionals) {
+		this(Paths.get(root.file.getAbsolutePath(), additionals));
+	}
+	
 	public Path path() {
 		return this.path;
 	}
@@ -94,6 +98,10 @@ public class Fid {
 	@Override
 	public String toString() {
 		return "[Fid] " + this.file;
+	}
+	
+	public Fid cd(String... additionals) {
+		return new Fid(this, additionals);
 	}
 	
 }

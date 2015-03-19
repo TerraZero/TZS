@@ -8,7 +8,7 @@ import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Info;
-import TZ.System.Annotations.Functions.BootFunction;
+import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
 
 /**
@@ -51,6 +51,10 @@ public class BootSystem implements BootSystemConstruction {
 	
 	public static Module bootModule() {
 		return BootSystem.construction().bsBootModule();
+	}
+	
+	public static void activeModule(List<Module> modules, InfoFile info) {
+		BootSystem.construction().bsActiveModule(modules, info);
 	}
 	
 	
@@ -104,7 +108,9 @@ public class BootSystem implements BootSystemConstruction {
 	@Override
 	public void bsBootBuildModuleDependencies(List<Module> dependencyTree, Module module) {
 		MessageSystem.out("Check '" + module.name() + "' ...");
-		if (module.isChecked()) {
+		if (!module.isActive()) {
+			MessageSystem.respond("inactive", MessageType.NOTICE);
+		} else if (module.isChecked()) {
 			MessageSystem.respond("already checked");
 		} else {
 			boolean check = true;
@@ -114,8 +120,8 @@ public class BootSystem implements BootSystemConstruction {
 					MessageSystem.quest("\t'" + module.name() + "' dependence on '" + dependency + "'");
 					Module dm = TZSystem.getModule(dependency);
 					// WHEN module is NOT available
-					if (dm == null) {
-						MessageSystem.respond("not found", MessageType.WARNING);
+					if (dm == null || !dm.isActive()) {
+						MessageSystem.respond("not found or inactive", MessageType.WARNING);
 						check = false;
 						break;
 					// WHEN module have already been checked THAN ignore module
@@ -141,8 +147,12 @@ public class BootSystem implements BootSystemConstruction {
 	@Override
 	public void bsBooting(List<Module> modules, List<Boot> boots) {
 		for (Module module : modules) {
-			this.module = module;
-			module.boot().reflect().call(BootFunction.class, TZSystem.BOOT_ID, module, boots);
+			if (module.isActive()) {
+				this.module = module;
+				if (module.info().boot().length() != 0) {
+					module.boot().reflect().call(module.info().boot(), TZSystem.BOOT_ID, module, boots);
+				}
+			}
 		}
 	}
 
@@ -152,6 +162,19 @@ public class BootSystem implements BootSystemConstruction {
 	@Override
 	public Module bsBootModule() {
 		return this.module;
+	}
+
+	/* 
+	 * @see TZ.System.Construction.BootSystemConstruction#bsActiveModule(java.util.List, TZ.System.File.InfoFile)
+	 */
+	@Override
+	public void bsActiveModule(List<Module> modules, InfoFile info) {
+		for (Module module : modules) {
+			String active = info.info(module.id());
+			if (active != null && active.equals("active")) {
+				module.active(true);
+			}
+		}
 	}
 	
 }

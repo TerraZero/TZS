@@ -18,6 +18,7 @@ import TZ.System.Exception.TZException;
 import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
+import TZ.System.Mechnic.Mechnic;
 
 /**
  * 
@@ -104,6 +105,9 @@ public class TZSystem {
 			this.sysConstruction();
 			this.sysConstructioning();
 			
+			MessageSystem.out("Loading modules...");
+			this.modules = BootSystem.bootModules(this.boots);
+			
 			this.sysInstall();
 			this.sysBooting();
 			this.sysIniting();
@@ -172,12 +176,12 @@ public class TZSystem {
 	
 	public void sysInstall() {
 		MessageSystem.out("Install system...");
-		String[] files = InstallSystem.installFiles(TZSystem.machineProgram() + ".info.txt", new File("").getAbsolutePath());
+		String[] files = InstallSystem.installFiles(TZSystem.machineProgram(), new File("").getAbsolutePath());
 		Fid install = InstallSystem.installFid(files);
 		if (install == null) {
 			this.info = InstallSystem.installing(install);
-			MessageSystem.quest("Install profile...");
-			InstallSystem.installProfile(this.info, this.boots);
+			MessageSystem.out("Install profile...");
+			InstallSystem.installProfile(this.info, this.modules);
 			this.info.save();
 			MessageSystem.respond(MessageType.SUCCESS);
 		} else {
@@ -186,10 +190,13 @@ public class TZSystem {
 	}
 	
 	public void sysBooting() {
-		MessageSystem.out("Loading modules...");
-		this.modules = BootSystem.bootModules(this.boots);
+		BootSystem.activeModule(this.modules, Module.infofile());
+		
 		BootSystem.bootModulesSort(this.modules);
 		this.modules = BootSystem.bootModulesDependencies(this.modules);
+		
+		MessageSystem.quest("Booting Mechnic...");
+		Mechnic.bootMechnic(this.boots);
 		
 		MessageSystem.out("Booting modules...");
 		BootSystem.booting(this.modules, this.boots);

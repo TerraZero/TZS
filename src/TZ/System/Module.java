@@ -1,12 +1,17 @@
 package TZ.System;
 
 import java.lang.annotation.Annotation;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import TZ.System.Annotations.AnnotationWrapper;
 import TZ.System.Annotations.Info;
+import TZ.System.Annotations.Base.AnnotationWrapper;
+import TZ.System.Construction.MessageSystem;
+import TZ.System.File.CFid;
+import TZ.System.File.Fid;
+import TZ.System.File.InfoFile;
 import TZ.System.Lists.Weighted;
 
 /**
@@ -19,7 +24,17 @@ import TZ.System.Lists.Weighted;
  * @identifier TZ.Reflect.Boot
  *
  */
-public class Module implements Weighted, AnnotationWrapper<Info> {
+@Info(install = "installModule")
+public class Module implements Weighted, AnnotationWrapper<Boot, Info> {
+	
+	private static InfoFile infofile;
+	
+	public static InfoFile infofile() {
+		if (Module.infofile == null) {
+			Module.infofile = new InfoFile(new Fid(Paths.get(TZSystem.info().info("base-path"), "system", "module.info")));
+		}
+		return Module.infofile;
+	}
 	
 	public static String getNameFromFile(String name) {
 		return name.substring(0, name.length() - 6);
@@ -45,9 +60,17 @@ public class Module implements Weighted, AnnotationWrapper<Info> {
 			}
 		}
 	}
+	
+	public static void installModule(InfoFile info, Module module) {
+		CFid root = new CFid(info.info("base-path"));
+		root.cDir("system").cFile("module.info");
+		MessageSystem.moduleOut(module, "Create module files");
+	}
 
 	protected Boot boot;
 	protected Info info;
+	
+	protected boolean active;
 	
 	// dependencies
 	protected boolean available;
@@ -106,6 +129,22 @@ public class Module implements Weighted, AnnotationWrapper<Info> {
 	
 	public void checked() {
 		this.checked = true;
+	}
+	
+	public boolean isActive() {
+		return this.active;
+	}
+	
+	public void active(boolean active) {
+		this.active = active;
+	}
+
+	/* 
+	 * @see TZ.System.Annotations.AnnotationWrapper#value()
+	 */
+	@Override
+	public Boot value() {
+		return this.boot;
 	}
 	
 }

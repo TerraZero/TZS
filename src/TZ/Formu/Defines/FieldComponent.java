@@ -31,7 +31,6 @@ public class FieldComponent extends FieldCache<JPanel> {
 	 */
 	@Override
 	public void buildFunctionsCache(Map<String, FieldFunction<JPanel>> functions) {
-		System.out.println("ok");
 		functions.put("#bounds", (parent, field, value, data) -> {
 			field.setBounds(value.getInt("-x", field.getX()), value.getInt("-y", field.getY()), value.getInt("-width", field.getWidth()), value.getInt("-height", field.getHeight()));
 		});
