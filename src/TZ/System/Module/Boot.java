@@ -1,4 +1,4 @@
-package TZ.System;
+package TZ.System.Module;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -10,6 +10,7 @@ import java.util.zip.ZipEntry;
 import TZ.System.Annotations.Base.AnnotationWrapper;
 import TZ.System.Annotations.Base.InfoWrapper;
 import TZ.System.Reflect.Reflect;
+import TZ.System.Reflect.Invoke.Invokeable;
 
 /**
  * 
@@ -21,7 +22,7 @@ import TZ.System.Reflect.Reflect;
  * @identifier TZ.System
  *
  */
-public class Boot {
+public class Boot implements Invokeable {
 	
 	public static<annot extends Annotation> void forAnnotations(List<Boot> boots, Class<annot> annotation, Consumer<InfoWrapper<Boot, annot>> consumer) {
 		for (Boot boot : boots) {

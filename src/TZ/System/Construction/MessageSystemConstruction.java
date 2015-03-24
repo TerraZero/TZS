@@ -1,7 +1,7 @@
 package TZ.System.Construction;
 
-import TZ.System.Module;
 import TZ.System.Exception.TZException;
+import TZ.System.Module.Module;
 
 /**
  * 
@@ -16,6 +16,8 @@ import TZ.System.Exception.TZException;
 public interface MessageSystemConstruction {
 
 	public void msOut(String out);
+	
+	public void msOut(String out, MessageType type);
 	
 	public void msQuest(String quest);
 

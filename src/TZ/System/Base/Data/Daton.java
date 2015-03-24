@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Mechnic.Mechnic;
 import TZ.System.Mechnic.MechnicCreator;
+import TZ.System.Module.Module;
 
 /**
  * 
@@ -20,7 +20,7 @@ import TZ.System.Mechnic.MechnicCreator;
  * @identifier TZ.System.Base.Data
  *
  */
-@Info(init = "initDaton")
+@Info(version = "1.x", compatible = "1.x", init = "initDaton")
 public class Daton {
 	
 	public static void main(String[] args) {

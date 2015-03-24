@@ -8,12 +8,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import TZ.Formu.Interfaces.FieldDefine;
-import TZ.System.Boot;
-import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Base.Data.Daton;
 import TZ.System.Mechnic.Mechnic;
+import TZ.System.Module.Boot;
+import TZ.System.Module.Module;
 
 /**
  * 
@@ -25,7 +25,7 @@ import TZ.System.Mechnic.Mechnic;
  * @identifier TZ.Forms
  *
  */
-@Info(name = "Formu", dependencies = {"Daton"}, init = "initFormu")
+@Info(version = "1.x", compatible = "1.x", name = "Formu", dependencies = {"daton"}, init = "initFormu")
 public class Formu {
 	
 	public static void main(String[] args) {
@@ -44,7 +44,7 @@ public class Formu {
 	private static Map<String, FieldDefine<?>> defines;
 
 	public static void initFormu(String id, Module module, List<Boot> boots) {
-		Formu.defines = Mechnic.getContext("formu", "map");
+		Formu.defines = Mechnic.get("formu", "map");
 		
 		Boot.forImplement(boots, FieldDefine.class, (boot) -> {
 			boot.reflect().instantiate();

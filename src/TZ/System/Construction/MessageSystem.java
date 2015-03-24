@@ -1,9 +1,9 @@
 package TZ.System.Construction;
 
-import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Exception.TZException;
+import TZ.System.Module.Module;
 
 /**
  * 
@@ -29,6 +29,10 @@ public class MessageSystem implements MessageSystemConstruction {
 
 	public static void out(String out) {
 		MessageSystem.construction().msOut(out);
+	}
+	
+	public static void out(String out, MessageType type) {
+		MessageSystem.construction().msOut(out, type);
 	}
 	
 	public static void moduleOut(Module module, String out) {
@@ -71,6 +75,14 @@ public class MessageSystem implements MessageSystemConstruction {
 	@Override
 	public void msOut(String out) {
 		System.out.println(out);
+	}
+	
+	/* 
+	 * @see TZ.System.Construction.MessageSystemConstruction#msOut(java.lang.String, TZ.System.Construction.MessageType)
+	 */
+	@Override
+	public void msOut(String out, MessageType type) {
+		this.msOut(out + "\t[" + type + "]");
 	}
 
 	/* 

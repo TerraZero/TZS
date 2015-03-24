@@ -2,10 +2,10 @@ package TZ.System.Construction;
 
 import java.util.List;
 
-import TZ.System.Boot;
-import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
+import TZ.System.Module.Boot;
+import TZ.System.Module.Module;
 
 /**
  * 

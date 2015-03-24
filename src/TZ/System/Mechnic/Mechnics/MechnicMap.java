@@ -2,7 +2,7 @@ package TZ.System.Mechnic.Mechnics;
 
 import java.util.HashMap;
 
-import TZ.System.Mechnic.Mech;
+import TZ.System.Mechnic.MCreator;
 import TZ.System.Mechnic.MechnicCreator;
 
 /**
@@ -15,7 +15,7 @@ import TZ.System.Mechnic.MechnicCreator;
  * @identifier TZ.System.Mechnic.Mechnics
  *
  */
-@Mech(option = "hashmap", mechnic = "map")
+@MCreator(option = "hashmap", mechnic = "map", base = true)
 public class MechnicMap implements MechnicCreator<HashMap<?, ?>> {
 
 	@Override

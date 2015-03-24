@@ -17,10 +17,26 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Mech {
+public @interface MCreator {
 
+	/**
+	 * The UNIQUE name of this creator
+	 */
 	public String option();
 	
+	/**
+	 * The Mechnic name for this creator
+	 */
 	public String mechnic();
+	
+	/**
+	 * The context for this creator
+	 */
+	public String context() default "";
+	
+	/**
+	 * Define the creator as default creator
+	 */
+	public boolean base() default false;
 	
 }

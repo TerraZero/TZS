@@ -1,18 +1,21 @@
-package TZ.System;
+package TZ.System.Module;
 
 import java.lang.annotation.Annotation;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import TZ.System.TZSystem;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Base.AnnotationWrapper;
+import TZ.System.Construction.FileSystem;
+import TZ.System.Construction.InstallSystem;
 import TZ.System.Construction.MessageSystem;
 import TZ.System.File.CFid;
-import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
 import TZ.System.Lists.Weighted;
+import TZ.System.Reflect.Reflect;
+import TZ.System.Reflect.Invoke.Invokeable;
 
 /**
  * 
@@ -24,14 +27,14 @@ import TZ.System.Lists.Weighted;
  * @identifier TZ.Reflect.Boot
  *
  */
-@Info(install = "installModule")
-public class Module implements Weighted, AnnotationWrapper<Boot, Info> {
+@Info(version = "1.x", compatible = "1.x", install = "installModule", module = false)
+public class Module implements Weighted, AnnotationWrapper<Boot, Info>, Invokeable {
 	
 	private static InfoFile infofile;
 	
 	public static InfoFile infofile() {
 		if (Module.infofile == null) {
-			Module.infofile = new InfoFile(new Fid(Paths.get(TZSystem.info().info("base-path"), "system", "module.info")));
+			Module.infofile = FileSystem.getInfo("user", "module.info");
 		}
 		return Module.infofile;
 	}
@@ -61,14 +64,15 @@ public class Module implements Weighted, AnnotationWrapper<Boot, Info> {
 		}
 	}
 	
-	public static void installModule(InfoFile info, Module module) {
-		CFid root = new CFid(info.info("base-path"));
-		root.cDir("system").cFile("module.info");
+	public static void installModule(InfoFile info, Module module, List<Boot> boots) {
+		CFid base = InstallSystem.base();
+		base.cDir("user", "defaults").cFile("module.info");
 		MessageSystem.moduleOut(module, "Create module files");
 	}
 
 	protected Boot boot;
 	protected Info info;
+	protected Version version;
 	
 	protected boolean active;
 	
@@ -138,6 +142,13 @@ public class Module implements Weighted, AnnotationWrapper<Boot, Info> {
 	public void active(boolean active) {
 		this.active = active;
 	}
+	
+	public Version version() {
+		if (this.version == null) {
+			this.version = new Version(this.info().compatible());
+		}
+		return this.version;
+	}
 
 	/* 
 	 * @see TZ.System.Annotations.AnnotationWrapper#value()
@@ -145,6 +156,14 @@ public class Module implements Weighted, AnnotationWrapper<Boot, Info> {
 	@Override
 	public Boot value() {
 		return this.boot;
+	}
+
+	/* 
+	 * @see TZ.System.Reflect.Invokeable#reflect()
+	 */
+	@Override
+	public Reflect reflect() {
+		return this.boot.reflect();
 	}
 	
 }

@@ -1,6 +1,7 @@
 package TZ.System.Construction;
 
 import TZ.System.File.Fid;
+import TZ.System.File.InfoFile;
 
 /**
  * 
@@ -13,8 +14,12 @@ import TZ.System.File.Fid;
  *
  */
 public interface FileSystemConstruction {
+	
+	public void fsInit(InfoFile info);
 
 	public Fid fsGet(String context, String name, String dir);
+	
+	public InfoFile fsGetInfo(String context, String file);
 	
 	public String fsGetContextToken(String context);
 	

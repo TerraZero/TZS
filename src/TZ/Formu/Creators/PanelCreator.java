@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import javax.swing.JPanel;
 
-import TZ.System.Mechnic.Mech;
+import TZ.System.Mechnic.MCreator;
 import TZ.System.Mechnic.MechnicCreator;
 
 /**
@@ -17,7 +17,7 @@ import TZ.System.Mechnic.MechnicCreator;
  * @identifier TZ.Formu.Creators
  *
  */
-@Mech(option = "FormuPanel", mechnic = "panel")
+@MCreator(option = "FormuPanel", mechnic = "panel")
 public class PanelCreator implements MechnicCreator<JPanel> {
 
 	/* 

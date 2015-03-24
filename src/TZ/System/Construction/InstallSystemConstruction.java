@@ -2,9 +2,11 @@ package TZ.System.Construction;
 
 import java.util.List;
 
-import TZ.System.Module;
+import TZ.System.File.CFid;
 import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
+import TZ.System.Module.Boot;
+import TZ.System.Module.Module;
 
 /**
  * 
@@ -26,8 +28,10 @@ public interface InstallSystemConstruction {
 	
 	public void isInstallProfile(InfoFile info, List<Module> modules);
 	
-	public void isInstall(InfoFile info, List<Module> modules);
+	public void isInstall(InfoFile info, List<Module> modules, List<Boot> boots);
 	
 	public void isInstallAbort();
+	
+	public CFid isBase();
 	
 }

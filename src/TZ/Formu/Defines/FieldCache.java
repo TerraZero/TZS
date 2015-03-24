@@ -26,7 +26,7 @@ public abstract class FieldCache<field> implements FieldDefine<field> {
 	@Override
 	public Map<String, FieldFunction<field>> buildFunctions() {
 		if (this.functions == null) {
-			this.functions = Mechnic.get("map");
+			this.functions = Mechnic.get("cache", "map");
 			this.buildFunctionsCache(this.functions);
 		}
 		return this.functions;

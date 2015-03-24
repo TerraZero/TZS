@@ -24,10 +24,14 @@ public class InfoFile {
 	protected LineInput input;
 	protected LineOutput output;
 	
-	public InfoFile(Fid fid) {
+	public InfoFile(Fid fid, Fid... extend) {
 		this.fid = fid;
 		this.input = new LineInput(this.fid);
 		this.output = new LineOutput(this.fid);
+		
+		for (int i = 0; i < extend.length; i++) {
+			this.extend(extend[i]);
+		}
 	}
 	
 	public Fid fid() {
@@ -89,6 +93,14 @@ public class InfoFile {
 		});
 		this.output.close();
 		return this;
+	}
+	
+	public void extend(Fid file) {
+		if (file.isExist()) {
+			new InfoFile(file).info().forEach((key, value) -> {
+				this.info(key, value);
+			});;
+		}
 	}
 	
 	protected void saving(String key, String value) {

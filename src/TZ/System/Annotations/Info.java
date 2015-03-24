@@ -20,6 +20,16 @@ import java.lang.annotation.Target;
 public @interface Info {
 	
 	/**
+	 * The version for compatible
+	 */
+	public String compatible();
+	
+	/**
+	 * The version of the module
+	 */
+	public String version();
+	
+	/**
 	 * Ascending order of the module
 	 */
 	public int weight() default 0;
@@ -61,6 +71,7 @@ public @interface Info {
 	/**
 	 * @param InfoFile info - system info
 	 * @param Module module - (this) the module
+	 * @param List &lt;Boot&gt; boots - a list of all loaded classes
 	 * @return function
 	 */
 	public String install() default "";
@@ -71,5 +82,10 @@ public @interface Info {
 	 * @return function
 	 */
 	public String installProfile() default "";
+	
+	/**
+	 * IF this is a Module or not
+	 */
+	public boolean module() default true;
 	
 }

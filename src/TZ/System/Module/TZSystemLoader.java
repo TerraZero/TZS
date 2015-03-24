@@ -1,4 +1,4 @@
-package TZ.System;
+package TZ.System.Module;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +39,7 @@ public class TZSystemLoader {
 	}
 	
 	public void init() {
+		this.invokes();
 		this.boots = new ArrayList<Boot>(1024);
 		try {
 			for (String systempath : this.getSystemPaths()) {
@@ -58,6 +59,20 @@ public class TZSystemLoader {
 			}
 		} catch (IOException e) {
 			throw new BootLoaderException(e, "Unexpected Exception in BootLoader", "Unexpected Exception in BootLoader");
+		}
+	}
+	
+	public void invokes() {
+		for (File file : new File(new File("").getAbsolutePath()).listFiles()) {
+			System.out.println(file.getAbsolutePath());
+			if (file.isFile() && file.canRead() && file.getName().endsWith(".jar")) {
+				try {
+					InvokeLoader.addFile(file);
+				} catch (IOException e) {
+					System.out.println("exception");
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	

@@ -2,7 +2,7 @@ package TZ.System.Mechnic.Mechnics;
 
 import java.util.ArrayList;
 
-import TZ.System.Mechnic.Mech;
+import TZ.System.Mechnic.MCreator;
 import TZ.System.Mechnic.MechnicCreator;
 
 /**
@@ -15,7 +15,7 @@ import TZ.System.Mechnic.MechnicCreator;
  * @identifier TZ.Mechnic.Mechnics
  *
  */
-@Mech(option = "arraylist", mechnic = "list")
+@MCreator(option = "arraylist", mechnic = "list", base = true)
 public class MechnicList implements MechnicCreator<ArrayList<?>> {
 	
 	@Override

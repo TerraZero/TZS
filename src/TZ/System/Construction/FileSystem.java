@@ -2,11 +2,12 @@ package TZ.System.Construction;
 
 import java.nio.file.Paths;
 
-import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Base.Tokens;
 import TZ.System.File.Fid;
+import TZ.System.File.InfoFile;
+import TZ.System.Module.Module;
 
 /**
  * 
@@ -39,6 +40,10 @@ public class FileSystem implements FileSystemConstruction {
 		return FileSystem.construction;
 	}
 	
+	public static void init(InfoFile info) {
+		FileSystem.construction().fsInit(info);
+	}
+	
 	public static Fid get(String name) {
 		return FileSystem.construction().fsGet(null, name, null);
 	}
@@ -53,6 +58,10 @@ public class FileSystem implements FileSystemConstruction {
 	
 	public static Fid get(Module module, String name) {
 		return FileSystem.construction().fsGet("modules/" + module.id(), name, null);
+	}
+	
+	public static InfoFile getInfo(String context, String file) {
+		return FileSystem.construction().fsGetInfo(context, file);
 	}
 	
 	public static Fid getExist(String context, String name) {
@@ -72,15 +81,6 @@ public class FileSystem implements FileSystemConstruction {
 	public FileSystem() {
 		this.systemtokens = new Tokens();
 		this.contexttokens = new Tokens();
-		this.base = TZSystem.info().info("base-path");
-		
-		// system tokens
-		this.fsAddSystemToken(false, this.base + "/" + TZSystem.program(), FileSystem.DEFAULT_SYSTEM_TOKEN);
-		this.fsAddSystemToken(System.getProperty("user.home"), "user");
-		this.fsAddSystemToken(false, System.getProperty("user.home"), "~");
-		
-		// context tokens
-		this.fsAddContextToken(false, "default", FileSystem.DEFAULT_CONTEXT_TOKEN);
 	}
 	
 	public Fid fsGet(String context, String name, String dir) {
@@ -117,6 +117,30 @@ public class FileSystem implements FileSystemConstruction {
 	
 	public void fsAddContextToken(String replace, String... tokens) {
 		this.contexttokens.addToken(replace, tokens);
+	}
+
+	/* 
+	 * @see TZ.System.Construction.FileSystemConstruction#fsInit(TZ.System.File.InfoFile)
+	 */
+	@Override
+	public void fsInit(InfoFile info) {
+		this.base = info.info("base-path");
+				
+		// system tokens
+		this.fsAddSystemToken(false, this.base, FileSystem.DEFAULT_SYSTEM_TOKEN);
+		this.fsAddSystemToken(System.getProperty("user.home"), "user");
+		this.fsAddSystemToken(false, System.getProperty("user.home"), "~");
+		
+		// context tokens
+		this.fsAddContextToken(false, "default", FileSystem.DEFAULT_CONTEXT_TOKEN);
+	}
+
+	/* 
+	 * @see TZ.System.Construction.FileSystemConstruction#fsGetInfo(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public InfoFile fsGetInfo(String context, String file) {
+		return new InfoFile(this.fsGet(context + "/defaults", file, null), this.fsGet(context, file, null));
 	}
 	
 }

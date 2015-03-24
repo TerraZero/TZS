@@ -26,7 +26,7 @@ public class Forms {
 	}
 	
 	public Forms(Form... steps) {
-		this.steps = Mechnic.get("list");
+		this.steps = Mechnic.get("formu", "list");
 		for (Form step : steps) {
 			this.steps.add(step);
 		}

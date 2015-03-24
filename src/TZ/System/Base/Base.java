@@ -1,6 +1,6 @@
 package TZ.System.Base;
 
-import TZ.System.Base.Functions.Searcher;
+import java.util.Comparator;
 
 /**
  * 
@@ -21,9 +21,9 @@ public class Base {
 		return false;
 	}
 	
-	public static<type> boolean isIntern(type search, type[] array, Searcher<type> function) {
+	public static<type> boolean isIntern(type search, type[] array, Comparator<type> function) {
 		for (int i = 0; i < array.length; i++) {
-			if (function.is(search, array[i])) return true;
+			if (function.compare(search, array[i]) == 0) return true;
 		}
 		return false;
 	}

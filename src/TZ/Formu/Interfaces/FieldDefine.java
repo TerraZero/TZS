@@ -26,7 +26,7 @@ public interface FieldDefine<field> {
 	}
 	
 	public default field create(String type, Daton data) {
-		return Mechnic.getContext("formu", type);
+		return Mechnic.get("formu", type);
 	}
 	
 	public Map<String, FieldFunction<field>> buildFunctions();

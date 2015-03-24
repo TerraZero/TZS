@@ -8,17 +8,22 @@ import java.util.Map;
 
 import TZ.System.Annotations.Construction;
 import TZ.System.Construction.BootSystem;
+import TZ.System.Construction.ConstructionWrapper;
 import TZ.System.Construction.ExitSystem;
+import TZ.System.Construction.FileSystem;
 import TZ.System.Construction.InitSystem;
 import TZ.System.Construction.InstallSystem;
 import TZ.System.Construction.MessageSystem;
-import TZ.System.Construction.MessageType;
 import TZ.System.Exception.ReflectException;
 import TZ.System.Exception.TZException;
 import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
 import TZ.System.Mechnic.Mechnic;
+import TZ.System.Module.Boot;
+import TZ.System.Module.Module;
+import TZ.System.Module.TZSystemLoader;
+import TZ.System.Module.Version;
 
 /**
  * 
@@ -35,6 +40,7 @@ public class TZSystem {
 	public static final String BOOT_ID = "boot";
 	public static final String INIT_ID = "init";
 	public static final String EXIT_ID = "exit";
+	public static final Version version = new Version("1.x");
 	
 	public static void main(String[] args) {
 		TZSystem.execute("test");
@@ -93,6 +99,7 @@ public class TZSystem {
 	}
 	
 	
+	
 	protected List<Boot> boots;
 	protected Map<String, ConstructionWrapper> constructions;
 	protected List<Module> modules;
@@ -109,6 +116,7 @@ public class TZSystem {
 			this.modules = BootSystem.bootModules(this.boots);
 			
 			this.sysInstall();
+			this.sysFile();
 			this.sysBooting();
 			this.sysIniting();
 		} catch (ReflectException e) {
@@ -181,12 +189,15 @@ public class TZSystem {
 		if (install == null) {
 			this.info = InstallSystem.installing(install);
 			MessageSystem.out("Install profile...");
-			InstallSystem.installProfile(this.info, this.modules);
+			InstallSystem.installProfile(this.info, this.modules, this.boots);
 			this.info.save();
-			MessageSystem.respond(MessageType.SUCCESS);
 		} else {
 			this.info = InstallSystem.installing(install);
 		}
+	}
+	
+	public void sysFile() {
+		FileSystem.init(this.info);
 	}
 	
 	public void sysBooting() {
@@ -209,7 +220,7 @@ public class TZSystem {
 	
 	public Module sysGetModule(String name) {
 		for (Module module : this.modules) {
-			if (module.name().equals(name)) {
+			if (module.id().equals(name)) {
 				return module;
 			}
 		}

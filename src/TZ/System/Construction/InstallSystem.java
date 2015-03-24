@@ -3,11 +3,13 @@ package TZ.System.Construction;
 import java.io.File;
 import java.util.List;
 
-import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
+import TZ.System.File.CFid;
 import TZ.System.File.Fid;
 import TZ.System.File.InfoFile;
+import TZ.System.Module.Boot;
+import TZ.System.Module.Module;
 
 /**
  * 
@@ -39,13 +41,17 @@ public class InstallSystem implements InstallSystemConstruction {
 		return InstallSystem.construction().isInstallFid(files);
 	}
 	
-	public static void installProfile(InfoFile info, List<Module> module) {
+	public static void installProfile(InfoFile info, List<Module> module, List<Boot> boots) {
 		InstallSystem.construction().isInstallProfile(info, module);
-		InstallSystem.construction().isInstall(info, module);
+		InstallSystem.construction().isInstall(info, module, boots);
 	}
 	
 	public static InfoFile installing(Fid install) {
 		return InstallSystem.construction().isInstalling(install);
+	}
+	
+	public static CFid base() {
+		return InstallSystem.construction().isBase();
 	}
 	
 	
@@ -111,11 +117,11 @@ public class InstallSystem implements InstallSystemConstruction {
 		return new InfoFile(install);
 	}
 	
-	public void isInstall(InfoFile info, List<Module> modules) {
+	public void isInstall(InfoFile info, List<Module> modules, List<Boot> boots) {
 		// invoke installs
 		for (Module module : modules) {
 			if (module.info().install().length() != 0) {
-				module.boot().reflect().call(module.info().install(), info, module);
+				module.boot().reflect().call(module.info().install(), info, module, boots);
 			}
 		}
 	}
@@ -143,6 +149,14 @@ public class InstallSystem implements InstallSystemConstruction {
 				module.boot().reflect().call(module.info().installProfile(), info, module);
 			}
 		}
+	}
+
+	/* 
+	 * @see TZ.System.Construction.InstallSystemConstruction#isBase()
+	 */
+	@Override
+	public CFid isBase() {
+		return new CFid(TZSystem.info().info("base-path"));
 	}
 
 }

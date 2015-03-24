@@ -3,13 +3,14 @@ package TZ.System.Construction;
 import java.util.ArrayList;
 import java.util.List;
 
-import TZ.System.Boot;
-import TZ.System.Module;
 import TZ.System.TZSystem;
 import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Info;
 import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
+import TZ.System.Module.Boot;
+import TZ.System.Module.Module;
+import TZ.System.Module.Version;
 
 /**
  * 
@@ -96,7 +97,9 @@ public class BootSystem implements BootSystemConstruction {
 		List<Module> dependencyTree = new ArrayList<Module>(modules.size());
 		
 		for (Module module : modules) {
-			this.bsBootBuildModuleDependencies(dependencyTree, module);
+			if (module.info().module()) {
+				this.bsBootBuildModuleDependencies(dependencyTree, module);
+			}
 		}
 		MessageSystem.out("Complete ...");
 		return dependencyTree;
@@ -107,7 +110,7 @@ public class BootSystem implements BootSystemConstruction {
 	 */
 	@Override
 	public void bsBootBuildModuleDependencies(List<Module> dependencyTree, Module module) {
-		MessageSystem.out("Check '" + module.name() + "' ...");
+		MessageSystem.out("Check '" + module.name() + "' [" + module.version() + "] ...");
 		if (!module.isActive()) {
 			MessageSystem.respond("inactive", MessageType.NOTICE);
 		} else if (module.isChecked()) {
@@ -117,19 +120,34 @@ public class BootSystem implements BootSystemConstruction {
 			// WHEN module have dependencies THAN add dependencies first
 			if (module.info().dependencies().length != 0) {
 				for (String dependency :  module.info().dependencies()) {
-					MessageSystem.quest("\t'" + module.name() + "' dependence on '" + dependency + "'");
+					String[] depend = dependency.split("!");
+					Version dependencyVersion = null;
+					dependency = depend[0];
+					if (depend.length == 2) {
+						dependencyVersion = new Version(depend[1]);
+					}
+					MessageSystem.quest("\t'" + module.name() + "' dependence on '" + dependency + "' [" + dependencyVersion + "]");
 					Module dm = TZSystem.getModule(dependency);
+					
 					// WHEN module is NOT available
 					if (dm == null || !dm.isActive()) {
 						MessageSystem.respond("not found or inactive", MessageType.WARNING);
 						check = false;
 						break;
-					// WHEN module have already been checked THAN ignore module
-					} else if (!dm.isAvailable()) {
-						MessageSystem.respond("found", MessageType.SUCCESS);
-						this.bsBootBuildModuleDependencies(dependencyTree, dm);
+					}
+					
+					if (dependencyVersion == null || dm.version().isCompatible(dependencyVersion)) {
+						// WHEN module have already been checked THAN ignore module
+						if (!dm.isAvailable()) {
+							MessageSystem.respond("found", MessageType.SUCCESS);
+							this.bsBootBuildModuleDependencies(dependencyTree, dm);
+						} else {
+							MessageSystem.respond("already load");
+						}
 					} else {
-						MessageSystem.respond("already load");
+						MessageSystem.respond("Incorrect version", MessageType.WARNING);
+						check = false;
+						break;
 					}
 				}
 			} else {
@@ -169,10 +187,17 @@ public class BootSystem implements BootSystemConstruction {
 	 */
 	@Override
 	public void bsActiveModule(List<Module> modules, InfoFile info) {
+		Version system = TZSystem.version;
+		
 		for (Module module : modules) {
 			String active = info.info(module.id());
+			
 			if (active != null && active.equals("active")) {
-				module.active(true);
+				if (system.isCompatible(module.version())) {
+					module.active(true);
+				} else {
+					MessageSystem.out("Version not compatible [" + module.id() + "]", MessageType.ERROR);
+				}
 			}
 		}
 	}
