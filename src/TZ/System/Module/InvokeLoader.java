@@ -6,8 +6,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import TZ.System.Reflect.Reflect;
-
 /**
  * 
  * @author terrazero
@@ -50,9 +48,6 @@ public class InvokeLoader {
             Method method = sysclass.getDeclaredMethod("addURL", URL.class);
             method.setAccessible(true);
             method.invoke(sysloader, new Object[] {u}); 
-            Reflect r = new Reflect("TZ.Test");
-            System.out.println(r.reflect());
-            r.call("test", "sadhgd");
         } catch (Throwable t) {
             t.printStackTrace();
             throw new IOException("Error, could not add URL to system classloader");

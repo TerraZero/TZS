@@ -10,11 +10,11 @@ package TZ.System.Exception;
  * @identifier TZ.System.Exception
  *
  */
-public class BootLoaderException extends TZException {
+public class LoaderException extends TZException {
 
 	private static final long serialVersionUID = 1L;
 
-	public BootLoaderException(Exception e, String message, String debug) {
+	public LoaderException(Exception e, String message, String debug) {
 		super(e, message, debug);
 	}
 

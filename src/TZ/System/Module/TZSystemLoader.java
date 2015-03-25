@@ -2,14 +2,19 @@ package TZ.System.Module;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import TZ.System.Exception.BootLoaderException;
+import javax.swing.JOptionPane;
+
+import TZ.System.Exception.LoaderException;
 
 /**
  * 
@@ -22,6 +27,57 @@ import TZ.System.Exception.BootLoaderException;
  *
  */
 public class TZSystemLoader {
+	
+	public static void main(String[] args) {
+		JOptionPane.showMessageDialog(null, TZSystemLoader.defaultPath());
+	}
+	
+	private static URLClassLoader loader;
+	private static Method addMethod;
+	private static URL defaultURL;
+	
+	public static URLClassLoader loader() {
+		if (TZSystemLoader.loader == null) {
+			TZSystemLoader.loader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+			TZSystemLoader.defaultURL = TZSystemLoader.loader.getURLs()[0];
+		}
+		return TZSystemLoader.loader;
+	}
+	
+	public static void addLoaderSource(File file) {
+		try {
+			TZSystemLoader.addLoaderSource(file.toURI().toURL());
+		} catch (MalformedURLException e) {
+			throw new LoaderException(e, "Couldn't transform file to URL", "Couldn't transform file to URL");
+		}
+	}
+	
+	public static void addLoaderSource(URL url) {
+		if (TZSystemLoader.addMethod == null) {
+			try {
+				TZSystemLoader.addMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+			} catch (NoSuchMethodException | SecurityException e) {
+				throw new LoaderException(e, "Couldn't get method addURL of class loader", "Couldn't get method addURL of class loader");
+			}
+			TZSystemLoader.addMethod.setAccessible(true);
+		}
+		try {
+			TZSystemLoader.addMethod.invoke(TZSystemLoader.loader(), new Object[] {url});
+		} catch (Exception e) {
+			throw new LoaderException(e, "Couldn't add URL to class loader", "Couldn't add URL to class loader");
+		}
+	}
+	
+	public static URL defaultURL() {
+		if (TZSystemLoader.defaultURL == null) {
+			TZSystemLoader.loader();
+		}
+		return TZSystemLoader.defaultURL;
+	}
+	
+	public static String defaultPath() {
+		return TZSystemLoader.defaultURL().getPath();
+	}
 	
 	protected List<Boot> boots;
 	
@@ -39,13 +95,13 @@ public class TZSystemLoader {
 	}
 	
 	public void init() {
-		this.invokes();
 		this.boots = new ArrayList<Boot>(1024);
 		try {
 			for (String systempath : this.getSystemPaths()) {
 				Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources(systempath);
 				while (resources.hasMoreElements()) {
 					String path = resources.nextElement().getFile();
+					System.out.println(path);
 					
 					if (path.startsWith("file:")) {
 						String[] location = this.getLocation(path);
@@ -58,21 +114,7 @@ public class TZSystemLoader {
 				}
 			}
 		} catch (IOException e) {
-			throw new BootLoaderException(e, "Unexpected Exception in BootLoader", "Unexpected Exception in BootLoader");
-		}
-	}
-	
-	public void invokes() {
-		for (File file : new File(new File("").getAbsolutePath()).listFiles()) {
-			System.out.println(file.getAbsolutePath());
-			if (file.isFile() && file.canRead() && file.getName().endsWith(".jar")) {
-				try {
-					InvokeLoader.addFile(file);
-				} catch (IOException e) {
-					System.out.println("exception");
-					e.printStackTrace();
-				}
-			}
+			throw new LoaderException(e, "Unexpected Exception in BootLoader", "Unexpected Exception in BootLoader");
 		}
 	}
 	
