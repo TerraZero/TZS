@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import TZ.System.TZSystem;
+import TZ.System.Sys;
 import TZ.System.Annotations.Info;
 import TZ.System.Mechnic.Mechnic;
 import TZ.System.Mechnic.MechnicCreator;
@@ -24,7 +24,7 @@ import TZ.System.Module.Module;
 public class Daton {
 	
 	public static void main(String[] args) {
-		TZSystem.execute("Test Daton");
+		Sys.execute("Test Daton");
 		Daton root = new Daton();
 		root.add("hier").add("type", "textfield").add("required", "false");
 		root.add("test").add("type", "container").add("cols", "2").add("items").add("submit").add("type", "submit").add("text", "Best�tigen");

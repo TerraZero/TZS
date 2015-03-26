@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import TZ.Formu.Interfaces.FieldDefine;
-import TZ.System.TZSystem;
+import TZ.System.Sys;
 import TZ.System.Annotations.Info;
 import TZ.System.Base.Data.Daton;
 import TZ.System.Mechnic.Mechnic;
@@ -29,7 +29,7 @@ import TZ.System.Module.Module;
 public class Formu {
 	
 	public static void main(String[] args) {
-		TZSystem.execute("formu");
+		Sys.execute("formu");
 		JFrame frame = new JFrame();
 		frame.setBounds(50, 50, 600, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -45,7 +45,7 @@ public @interface Info {
 	public String[] dependencies() default {};
 	
 	/**
-	 * @param String id - process id (TZSystem.BOOT_ID) 
+	 * @param LoadState state - loading state 
 	 * @param Module module - (this) the module
 	 * @param List &lt;Boot&gt; boots - a list of all loaded classes
 	 * @return function
@@ -53,7 +53,7 @@ public @interface Info {
 	public String boot() default "";
 	
 	/**
-	 * @param String id - process id (TZSystem.INIT_ID)
+	 * @param LoadState state - loading state 
 	 * @param Module module - (this) the module
 	 * @param List &lt;Boot&gt; boots - a list of all loaded classes
 	 * @return function
@@ -61,7 +61,7 @@ public @interface Info {
 	public String init() default "";
 	
 	/**
-	 * @param String id - process id (TZSystem.EXIT_ID)
+	 * @param LoadState state - loading state 
 	 * @param Module module - (this) the module
 	 * @param List &lt;Boot&gt; boots - a list of all loaded classes
 	 * @return function
@@ -69,7 +69,7 @@ public @interface Info {
 	public String exit() default "";
 	
 	/**
-	 * @param InfoFile info - system info
+	 * @param LoadState state - loading state 
 	 * @param Module module - (this) the module
 	 * @param List &lt;Boot&gt; boots - a list of all loaded classes
 	 * @return function
@@ -77,8 +77,9 @@ public @interface Info {
 	public String install() default "";
 	
 	/**
-	 * @param InfoFile info - system info file to edit
+	 * @param LoadState state - loading state 
 	 * @param Module module - (this) the module
+	 * @param List &lt;Boot&gt; boots - a list of all loaded classes
 	 * @return function
 	 */
 	public String installProfile() default "";

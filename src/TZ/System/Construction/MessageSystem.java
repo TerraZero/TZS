@@ -1,6 +1,6 @@
 package TZ.System.Construction;
 
-import TZ.System.TZSystem;
+import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
 import TZ.System.Exception.TZException;
 import TZ.System.Module.Module;
@@ -15,14 +15,14 @@ import TZ.System.Module.Module;
  * @identifier TZ.System
  *
  */
-@Construction(name = "messagesystem", system = true)
+@Construction(name = "sysmessage", type = "messagesystem", system = true)
 public class MessageSystem implements MessageSystemConstruction {
 	
 	private static MessageSystemConstruction construction;
 	
 	public static MessageSystemConstruction construction() {
 		if (MessageSystem.construction == null) {
-			MessageSystem.construction = TZSystem.construction("messagesystem");
+			MessageSystem.construction = Sys.construction("messagesystem");
 		}
 		return MessageSystem.construction;
 	}

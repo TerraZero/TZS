@@ -2,6 +2,7 @@ package TZ.System.Construction;
 
 import java.util.List;
 
+import TZ.System.LoadState;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
 
@@ -17,7 +18,7 @@ import TZ.System.Module.Module;
  */
 public interface ExitSystemConstruction {
 
-	public void esExiting(int code, List<Module> modules, List<Boot> boots);
+	public void esExiting(LoadState state, int code, List<Module> modules, List<Boot> boots);
 	
 	public void esExit(int code);
 	

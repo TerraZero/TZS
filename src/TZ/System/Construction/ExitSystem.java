@@ -2,7 +2,8 @@ package TZ.System.Construction;
 
 import java.util.List;
 
-import TZ.System.TZSystem;
+import TZ.System.LoadState;
+import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
@@ -17,20 +18,20 @@ import TZ.System.Module.Module;
  * @identifier TZ.System.Construction.Exit
  *
  */
-@Construction(name = "exitsystem", system = true)
+@Construction(name = "sysexit", type = "exitsystem", system = true)
 public class ExitSystem implements ExitSystemConstruction {
 	
 	private static ExitSystemConstruction construction;
 	
 	public static ExitSystemConstruction construction() {
 		if (ExitSystem.construction == null) {
-			ExitSystem.construction = TZSystem.construction("exitsystem");
+			ExitSystem.construction = Sys.construction("exitsystem");
 		}
 		return ExitSystem.construction;
 	}
 	
-	public static void exiting(int code, List<Module> modules, List<Boot> boots) {
-		ExitSystem.construction().esExiting(code, modules, boots);
+	public static void exiting(LoadState state, int code, List<Module> modules, List<Boot> boots) {
+		ExitSystem.construction().esExiting(state, code, modules, boots);
 	}
 	
 	public static void exit(int code) {
@@ -43,15 +44,16 @@ public class ExitSystem implements ExitSystemConstruction {
 	 * @see TZ.System.Construction.Exit.ExitSystemConstruction#esExiting(int)
 	 */
 	@Override
-	public void esExiting(int code, List<Module> modules, List<Boot> boots) {
+	public void esExiting(LoadState state, int code, List<Module> modules, List<Boot> boots) {
 		MessageSystem.out("Exiting ...");
 		if (modules != null) {
 			for (Module module : modules) {
 				if (module.isActive() && module.info().exit().length() != 0) {
-					module.boot().reflect().call(module.info().exit(), TZSystem.EXIT_ID, module, boots);
+					module.boot().reflect().call(module.info().exit(), state, module, boots);
 				}
 			}
 		}
+		MessageSystem.out("Complete");
 	}
 
 	/* 

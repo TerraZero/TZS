@@ -2,7 +2,7 @@ package TZ.System.Construction;
 
 import java.nio.file.Paths;
 
-import TZ.System.TZSystem;
+import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
 import TZ.System.Base.Tokens;
 import TZ.System.File.Fid;
@@ -19,23 +19,17 @@ import TZ.System.Module.Module;
  * @identifier TZ.System.File
  *
  */
-@Construction(name = "filesystem", system = true)
+@Construction(name = "sysfile", type = "filesystem", system = true)
 public class FileSystem implements FileSystemConstruction {
 	
 	public static final String DEFAULT_SYSTEM_TOKEN = "[default]";
 	public static final String DEFAULT_CONTEXT_TOKEN = "[default]";
 	
-	public static void main(String[] args) {
-		TZSystem.execute("TestProgram");
-		Fid fid = FileSystem.get("modules", "test");
-		System.out.println(fid.file());
-	}
-	
 	private static FileSystemConstruction construction;
 	
 	public static FileSystemConstruction construction() {
 		if (FileSystem.construction == null) {
-			FileSystem.construction = TZSystem.construction("filesystem");
+			FileSystem.construction = Sys.construction("filesystem");
 		}
 		return FileSystem.construction;
 	}

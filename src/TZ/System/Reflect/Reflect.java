@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import TZ.System.Exception.ReflectException;
-import TZ.System.Module.TZSystemLoader;
+import TZ.System.Module.SysLoader;
 
 /**
  * 
@@ -55,7 +55,7 @@ public class Reflect {
 	public Reflect reflect(String load) {
 		try {
 			// TODO einen eigenen classloader erzeugen
-			this.reflectClass = TZSystemLoader.loader().loadClass(load);
+			this.reflectClass = SysLoader.loader().loadClass(load);
 			this.reflect = null;
 		} catch (ClassNotFoundException e) {
 			throw new ReflectException(e, "reflect", "reflect", this);

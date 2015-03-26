@@ -2,7 +2,7 @@ package TZ.System.Construction;
 
 import java.util.List;
 
-import TZ.System.File.InfoFile;
+import TZ.System.LoadState;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
 
@@ -18,17 +18,17 @@ import TZ.System.Module.Module;
  */
 public interface BootSystemConstruction {
 	
-	public void bsActiveModule(List<Module> modules, InfoFile info);
-
-	public List<Module> bsBootModules(List<Boot> boots);
+	public List<Module> bsBootModules(LoadState state, List<Boot> boots);
 	
-	public void bsBootModulesSort(List<Module> modules);
+	public void bsActiveModule(LoadState state, List<Module> modules);
 	
-	public List<Module> bsBootModulesDependencies(List<Module> modules);
+	public void bsBootModulesSort(LoadState state, List<Module> modules);
 	
-	public void bsBootBuildModuleDependencies(List<Module> dependencyTree, Module module);
+	public List<Module> bsBootModulesDependencies(LoadState state, List<Module> modules);
 	
-	public void bsBooting(List<Module> modules, List<Boot> boots);
+	public void bsBootBuildModuleDependencies(LoadState state, List<Module> dependencyTree, Module module);
+	
+	public void bsBooting(LoadState state, List<Module> modules, List<Boot> boots);
 	
 	public Module bsBootModule();
 	

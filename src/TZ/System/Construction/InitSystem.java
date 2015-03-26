@@ -2,7 +2,8 @@ package TZ.System.Construction;
 
 import java.util.List;
 
-import TZ.System.TZSystem;
+import TZ.System.LoadState;
+import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
@@ -17,20 +18,20 @@ import TZ.System.Module.Module;
  * @identifier TZ.System.Init
  *
  */
-@Construction(name = "initsystem", system = true)
+@Construction(name = "sysinit", type = "initsystem", system = true)
 public class InitSystem implements InitSystemConstruction {
 	
 	private static InitSystemConstruction construction;
 	
 	public static InitSystemConstruction construction() {
 		if (InitSystem.construction == null) {
-			InitSystem.construction = TZSystem.construction("initsystem");
+			InitSystem.construction = Sys.construction("initsystem");
 		}
 		return InitSystem.construction;
 	}
 	
-	public static void initing(List<Module> modules, List<Boot> boots) {
-		InitSystem.construction().isIniting(modules, boots);
+	public static void initing(LoadState state, List<Module> modules, List<Boot> boots) {
+		InitSystem.construction().isIniting(state, modules, boots);
 	}
 	
 	public static Module initModule() {
@@ -45,15 +46,17 @@ public class InitSystem implements InitSystemConstruction {
 	 * @see TZ.System.Init.InitSystemConstruction#isIniting(java.util.List, java.util.List)
 	 */
 	@Override
-	public void isIniting(List<Module> modules, List<Boot> boots) {
+	public void isIniting(LoadState state, List<Module> modules, List<Boot> boots) {
+		MessageSystem.quest("Init modules ...");
 		for (Module module : modules) {
 			if (module.isActive()) {
 				this.module = module;
 				if (module.info().init().length() != 0) {
-					module.boot().reflect().call(module.info().init(), TZSystem.INIT_ID, module, boots);
+					module.boot().reflect().call(module.info().init(), state, module, boots);
 				}
 			}
 		}
+		MessageSystem.out("Complete");
 	}
 
 	/* 

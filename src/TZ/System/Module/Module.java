@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import TZ.System.TZSystem;
+import TZ.System.LoadState;
+import TZ.System.Sys;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Base.AnnotationWrapper;
 import TZ.System.Construction.FileSystem;
-import TZ.System.Construction.InstallSystem;
 import TZ.System.Construction.MessageSystem;
 import TZ.System.File.CFid;
 import TZ.System.File.InfoFile;
@@ -64,8 +64,8 @@ public class Module implements Weighted, AnnotationWrapper<Boot, Info>, Invokeab
 		}
 	}
 	
-	public static void installModule(InfoFile info, Module module, List<Boot> boots) {
-		CFid base = InstallSystem.base();
+	public static void installModule(LoadState state, Module module, List<Boot> boots) {
+		CFid base = new CFid(state.data("base-path"));
 		base.cDir("user", "defaults").cFile("module.info");
 		MessageSystem.moduleOut(module, "Create module files");
 	}
@@ -112,7 +112,7 @@ public class Module implements Weighted, AnnotationWrapper<Boot, Info>, Invokeab
 	}
 	
 	public String id() {
-		return TZSystem.nameToID(this.name());
+		return Sys.nameToID(this.name());
 	}
 	
 	/**

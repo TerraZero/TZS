@@ -2,6 +2,7 @@ package TZ.System.Mechnic;
 
 import java.util.List;
 
+import TZ.System.LoadState;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Base.InfoWrapper;
 import TZ.System.Cache.Cache;
@@ -48,8 +49,8 @@ public class Mechnic {
 		MessageSystem.respond(MessageType.SUCCESS);
 	}
 	
-	public static void installMechnic(InfoFile info, Module module, List<Boot> boots) {
-		CFid base = InstallSystem.base();
+	public static void installMechnic(LoadState state, Module module, List<Boot> boots) {
+		CFid base = new CFid(state.data("base-path"));
 		InfoFile file = new InfoFile(base.cDir("user", "defaults").cFile("mechnic.info"));
 		
 		Boot.forAnnotations(boots, MCreator.class, (wrapper) -> {

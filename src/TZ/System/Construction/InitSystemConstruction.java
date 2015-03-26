@@ -2,6 +2,7 @@ package TZ.System.Construction;
 
 import java.util.List;
 
+import TZ.System.LoadState;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
 
@@ -17,7 +18,7 @@ import TZ.System.Module.Module;
  */
 public interface InitSystemConstruction {
 
-	public void isIniting(List<Module> modules, List<Boot> boots);
+	public void isIniting(LoadState state, List<Module> modules, List<Boot> boots);
 	
 	public Module isInitModule();
 	

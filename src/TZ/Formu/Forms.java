@@ -2,7 +2,7 @@ package TZ.Formu;
 
 import java.util.List;
 
-import TZ.System.TZSystem;
+import TZ.System.Sys;
 import TZ.System.Mechnic.Mechnic;
 
 /**
@@ -21,7 +21,7 @@ public class Forms {
 	protected int current;
 	
 	public static void main(String[] args) {
-		TZSystem.execute("form");
+		Sys.execute("form");
 		
 	}
 	

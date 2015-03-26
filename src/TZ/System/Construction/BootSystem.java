@@ -2,11 +2,12 @@ package TZ.System.Construction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import TZ.System.TZSystem;
+import TZ.System.LoadState;
+import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
 import TZ.System.Annotations.Info;
-import TZ.System.File.InfoFile;
 import TZ.System.Lists.Lists;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
@@ -22,40 +23,40 @@ import TZ.System.Module.Version;
  * @identifier TZ.System.Boot
  *
  */
-@Construction(name = "bootsystem", system = true)
+@Construction(name = "sysboot", type = "bootsystem", system = true)
 public class BootSystem implements BootSystemConstruction {
 
 	private static BootSystemConstruction construction;
 	
 	public static BootSystemConstruction construction() {
 		if (BootSystem.construction == null) {
-			BootSystem.construction = TZSystem.construction("bootsystem");
+			BootSystem.construction = Sys.construction("bootsystem");
 		}
 		return BootSystem.construction;
 	}
 	
-	public static List<Module> bootModules(List<Boot> boots) {
-		return BootSystem.construction().bsBootModules(boots);
+	public static List<Module> bootModules(LoadState state, List<Boot> boots) {
+		return BootSystem.construction().bsBootModules(state, boots);
 	}
 	
-	public static void bootModulesSort(List<Module> modules) {
-		BootSystem.construction().bsBootModulesSort(modules);
+	public static void bootModulesSort(LoadState state, List<Module> modules) {
+		BootSystem.construction().bsBootModulesSort(state, modules);
 	}
 	
-	public static List<Module> bootModulesDependencies(List<Module> modules) {
-		return BootSystem.construction().bsBootModulesDependencies(modules);
+	public static List<Module> bootModulesDependencies(LoadState state, List<Module> modules) {
+		return BootSystem.construction().bsBootModulesDependencies(state, modules);
 	}
 	
-	public static void booting(List<Module> modules, List<Boot> boots) {
-		BootSystem.construction().bsBooting(modules, boots);
+	public static void booting(LoadState state, List<Module> modules, List<Boot> boots) {
+		BootSystem.construction().bsBooting(state, modules, boots);
 	}
 	
 	public static Module bootModule() {
 		return BootSystem.construction().bsBootModule();
 	}
 	
-	public static void activeModule(List<Module> modules, InfoFile info) {
-		BootSystem.construction().bsActiveModule(modules, info);
+	public static void activeModule(LoadState state, List<Module> modules) {
+		BootSystem.construction().bsActiveModule(state, modules);
 	}
 	
 	
@@ -66,16 +67,14 @@ public class BootSystem implements BootSystemConstruction {
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBootModules(java.util.List)
 	 */
 	@Override
-	public List<Module> bsBootModules(List<Boot> boots) {
-		MessageSystem.out("Build modules ...");
+	public List<Module> bsBootModules(LoadState state, List<Boot> boots) {
+		MessageSystem.quest("Load modules ...");
 		List<Module> modules = new ArrayList<Module>(128);
 		
-		MessageSystem.out("Load modules ...");
-		for (Boot boot : boots) {
-			if (boot.reflect().hasAnnotation(Info.class)) {
-				modules.add(new Module(boot));
-			}
-		}
+		Boot.forAnnotations(boots, Info.class, (wrapper) -> {
+			modules.add(new Module(wrapper.value()));
+		});
+		MessageSystem.respond(MessageType.SUCCESS);
 		return modules;
 	}
 
@@ -83,25 +82,26 @@ public class BootSystem implements BootSystemConstruction {
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBootModulesSort(java.util.List)
 	 */
 	@Override
-	public void bsBootModulesSort(List<Module> modules) {
+	public void bsBootModulesSort(LoadState state, List<Module> modules) {
 		MessageSystem.out("Sort modules ...");
 		Lists.sortASC(modules);
+		MessageSystem.out("Complete");
 	}
 
 	/* 
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBootModulesDependencies(java.util.List)
 	 */
 	@Override
-	public List<Module> bsBootModulesDependencies(List<Module> modules) {
+	public List<Module> bsBootModulesDependencies(LoadState state, List<Module> modules) {
 		MessageSystem.out("Build dependencies ...");
 		List<Module> dependencyTree = new ArrayList<Module>(modules.size());
 		
 		for (Module module : modules) {
 			if (module.info().module()) {
-				this.bsBootBuildModuleDependencies(dependencyTree, module);
+				this.bsBootBuildModuleDependencies(state, dependencyTree, module);
 			}
 		}
-		MessageSystem.out("Complete ...");
+		MessageSystem.out("Complete");
 		return dependencyTree;
 	}
 
@@ -109,7 +109,7 @@ public class BootSystem implements BootSystemConstruction {
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBootBuildModuleDependencies(java.util.List, TZ.System.Module)
 	 */
 	@Override
-	public void bsBootBuildModuleDependencies(List<Module> dependencyTree, Module module) {
+	public void bsBootBuildModuleDependencies(LoadState state, List<Module> dependencyTree, Module module) {
 		MessageSystem.out("Check '" + module.name() + "' [" + module.version() + "] ...");
 		if (!module.isActive()) {
 			MessageSystem.respond("inactive", MessageType.NOTICE);
@@ -127,7 +127,7 @@ public class BootSystem implements BootSystemConstruction {
 						dependencyVersion = new Version(depend[1]);
 					}
 					MessageSystem.quest("\t'" + module.name() + "' dependence on '" + dependency + "' [" + dependencyVersion + "]");
-					Module dm = TZSystem.getModule(dependency);
+					Module dm = Sys.getModule(dependency);
 					
 					// WHEN module is NOT available
 					if (dm == null || !dm.isActive()) {
@@ -140,7 +140,7 @@ public class BootSystem implements BootSystemConstruction {
 						// WHEN module have already been checked THAN ignore module
 						if (!dm.isAvailable()) {
 							MessageSystem.respond("found", MessageType.SUCCESS);
-							this.bsBootBuildModuleDependencies(dependencyTree, dm);
+							this.bsBootBuildModuleDependencies(state, dependencyTree, dm);
 						} else {
 							MessageSystem.respond("already load");
 						}
@@ -163,15 +163,17 @@ public class BootSystem implements BootSystemConstruction {
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBooting(java.util.List)
 	 */
 	@Override
-	public void bsBooting(List<Module> modules, List<Boot> boots) {
+	public void bsBooting(LoadState state, List<Module> modules, List<Boot> boots) {
+		MessageSystem.out("Booting modules ...");
 		for (Module module : modules) {
 			if (module.isActive()) {
 				this.module = module;
 				if (module.info().boot().length() != 0) {
-					module.boot().reflect().call(module.info().boot(), TZSystem.BOOT_ID, module, boots);
+					module.boot().reflect().call(module.info().boot(), state, module, boots);
 				}
 			}
 		}
+		MessageSystem.out("Complete");
 	}
 
 	/* 
@@ -186,20 +188,24 @@ public class BootSystem implements BootSystemConstruction {
 	 * @see TZ.System.Construction.BootSystemConstruction#bsActiveModule(java.util.List, TZ.System.File.InfoFile)
 	 */
 	@Override
-	public void bsActiveModule(List<Module> modules, InfoFile info) {
-		Version system = TZSystem.version;
+	public void bsActiveModule(LoadState state, List<Module> modules) {
+		MessageSystem.out("Check compatibility of modules ...");
+		Version system = Sys.version;
+		Map<String, String> info = state.infos("module");
 		
 		for (Module module : modules) {
-			String active = info.info(module.id());
+			String active = info.get(module.id());
 			
 			if (active != null && active.equals("active")) {
 				if (system.isCompatible(module.version())) {
 					module.active(true);
 				} else {
+					state.data("boot:" + module.id(), "incompatible");
 					MessageSystem.out("Version not compatible [" + module.id() + "]", MessageType.ERROR);
 				}
 			}
 		}
+		MessageSystem.out("Check complete");
 	}
 	
 }

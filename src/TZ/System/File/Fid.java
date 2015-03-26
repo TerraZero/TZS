@@ -17,6 +17,14 @@ import java.nio.file.Paths;
  *
  */
 public class Fid {
+	
+	public static Fid search(String... paths) {
+		for (String path : paths) {
+			File file = new File(path);
+			if (file.exists()) return new Fid(file);
+		}
+		return null;
+	}
 
 	protected Path path;
 	protected File file;
