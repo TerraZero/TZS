@@ -82,7 +82,7 @@ public @interface Info {
 	 * @param List &lt;Boot&gt; boots - a list of all loaded classes
 	 * @return function
 	 */
-	public String installProfile() default "";
+	public String installInfo() default "";
 	
 	/**
 	 * IF this is a Module or not

@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import TZ.System.LoadState;
 import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
+import TZ.System.Annotations.Interfaces.InstallProfile;
 import TZ.System.File.CFid;
 import TZ.System.File.InfoFile;
 import TZ.System.Module.Boot;
@@ -60,6 +61,12 @@ public class InstallSystem implements InstallSystemConstruction {
 	
 	public void isInstall(LoadState state, List<Module> modules, List<Boot> boots) {
 		MessageSystem.out("Install system ...");
+		// invoke install profiles
+		for (Module module : modules) {
+			if (module.info().installInfo().length() != 0) {
+				module.boot().reflect().call(module.info().installInfo(), state, module, boots);
+			}
+		}
 		// invoke installs
 		for (Module module : modules) {
 			if (module.info().install().length() != 0) {
@@ -75,12 +82,30 @@ public class InstallSystem implements InstallSystemConstruction {
 	@Override
 	public void isInstallProfile(LoadState state, List<Module> modules, List<Boot> boots) {
 		MessageSystem.out("Install profile ...");
-		// invoke install profiles
-		for (Module module : modules) {
-			if (module.info().installProfile().length() != 0) {
-				module.boot().reflect().call(module.info().installProfile(), state, module, boots);
+		InstallProfile profile = null;
+		for (Boot boot : boots) {
+			if (boot.reflect().implement(InstallProfile.class)) {
+				profile = boot.reflect().instantiate().getReflect();
+				break;
 			}
 		}
+		if (profile == null) {
+			MessageSystem.out("No profile found!");
+		} else {
+			MessageSystem.out("Load profile '" + profile.name() + "' ...");
+			MessageSystem.out("\tBuild profile base ...");
+			profile.profileBase(state, InstallSystem.base());
+			
+			MessageSystem.out("\tBuild profile construction ...");
+			profile.profileConstruction(state.infos("construction"));
+			
+			MessageSystem.out("\tBuild profile module ...");
+			profile.profileBase(state, InstallSystem.base());
+			
+			MessageSystem.out("\tBuild profile mechnic ...");
+			profile.profileBase(state, InstallSystem.base());
+		}
+		
 		MessageSystem.out("Complete");
 	}
 	

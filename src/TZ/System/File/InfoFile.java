@@ -16,26 +16,21 @@ import TZ.System.File.IO.LineOutput;
  * @identifier TZ.System.File
  *
  */
-public class InfoFile {
+public class InfoFile extends Fid {
 
-	protected Fid fid;
 	protected Map<String, String> infos;
 	
 	protected LineInput input;
 	protected LineOutput output;
 	
 	public InfoFile(Fid fid, Fid... extend) {
-		this.fid = fid;
-		this.input = new LineInput(this.fid);
-		this.output = new LineOutput(this.fid);
+		super(fid);
+		this.input = new LineInput(this);
+		this.output = new LineOutput(this);
 		
 		for (int i = 0; i < extend.length; i++) {
 			this.extend(extend[i]);
 		}
-	}
-	
-	public Fid fid() {
-		return this.fid;
 	}
 	
 	public Map<String, String> info() {
@@ -70,12 +65,14 @@ public class InfoFile {
 		if (this.infos == null || force) {
 			this.infos = new HashMap<String, String>();
 			
-			input.open();
-			String line = null;
-			while ((line = input.readLine()) != null) {
-				this.loading(line.trim());
+			if (this.isExist() && this.file().isFile()) {
+				input.open();
+				String line = null;
+				while ((line = input.readLine()) != null) {
+					this.loading(line.trim());
+				}
+				input.close();
 			}
-			input.close();
 		}
 		return this;
 	}
@@ -94,6 +91,9 @@ public class InfoFile {
 	}
 	
 	public InfoFile save() {
+		if (!this.isExist()) {
+			this.create();
+		}
 		this.output.open();
 		this.infos.forEach((k, v) -> {
 			this.saving(k, v);
@@ -103,7 +103,7 @@ public class InfoFile {
 	}
 	
 	public void extend(Fid file) {
-		if (file != null && file.isExist()) {
+		if (file != null) {
 			new InfoFile(file).info().forEach((key, value) -> {
 				this.info(key, value);
 			});;

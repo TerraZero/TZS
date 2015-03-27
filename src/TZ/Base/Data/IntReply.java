@@ -1,4 +1,4 @@
-package TZ.System.Base.Data;
+package TZ.Base.Data;
 
 import java.util.ArrayList;
 import java.util.List;
