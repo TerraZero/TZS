@@ -50,7 +50,7 @@ public class Mechnic {
 	}
 	
 	public static void installMechnic(LoadState state, Module module, List<Boot> boots) {
-		CFid base = new CFid(state.data("base-path"));
+		CFid base = InstallSystem.base();
 		InfoFile file = new InfoFile(base.cDir("user", "defaults").cFile("mechnic.info"));
 		
 		Boot.forAnnotations(boots, MCreator.class, (wrapper) -> {

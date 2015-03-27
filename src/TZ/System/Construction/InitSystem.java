@@ -47,7 +47,7 @@ public class InitSystem implements InitSystemConstruction {
 	 */
 	@Override
 	public void isIniting(LoadState state, List<Module> modules, List<Boot> boots) {
-		MessageSystem.quest("Init modules ...");
+		MessageSystem.out("Init modules ...");
 		for (Module module : modules) {
 			if (module.isActive()) {
 				this.module = module;

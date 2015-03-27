@@ -7,7 +7,6 @@ import java.util.Map;
 import TZ.System.LoadState;
 import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
-import TZ.System.Annotations.Info;
 import TZ.System.Lists.Lists;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
@@ -35,10 +34,6 @@ public class BootSystem implements BootSystemConstruction {
 		return BootSystem.construction;
 	}
 	
-	public static List<Module> bootModules(LoadState state, List<Boot> boots) {
-		return BootSystem.construction().bsBootModules(state, boots);
-	}
-	
 	public static void bootModulesSort(LoadState state, List<Module> modules) {
 		BootSystem.construction().bsBootModulesSort(state, modules);
 	}
@@ -62,21 +57,6 @@ public class BootSystem implements BootSystemConstruction {
 	
 	
 	protected Module module;
-
-	/* 
-	 * @see TZ.System.Boot.BootSystemConstruction#bsBootModules(java.util.List)
-	 */
-	@Override
-	public List<Module> bsBootModules(LoadState state, List<Boot> boots) {
-		MessageSystem.quest("Load modules ...");
-		List<Module> modules = new ArrayList<Module>(128);
-		
-		Boot.forAnnotations(boots, Info.class, (wrapper) -> {
-			modules.add(new Module(wrapper.value()));
-		});
-		MessageSystem.respond(MessageType.SUCCESS);
-		return modules;
-	}
 
 	/* 
 	 * @see TZ.System.Boot.BootSystemConstruction#bsBootModulesSort(java.util.List)

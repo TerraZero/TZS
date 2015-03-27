@@ -3,6 +3,7 @@ package TZ.System.Construction;
 import java.util.List;
 
 import TZ.System.LoadState;
+import TZ.System.File.CFid;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
 
@@ -25,5 +26,7 @@ public interface InstallSystemConstruction {
 	public void isInstallSystem(LoadState state, List<Module> modules, List<Boot> boots);
 	
 	public void isInstallComplete(LoadState state, List<Module> modules, List<Boot> boots);
+	
+	public CFid isBase();
 	
 }

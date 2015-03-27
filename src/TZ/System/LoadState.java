@@ -45,8 +45,8 @@ public class LoadState {
 			LoadState.INFO_STATE,
 			LoadState.LOAD_STATE,
 			LoadState.CONSTRUCTION_STATE,
+			LoadState.INSTALL_STATE,
 			LoadState.BOOT_STATE,
-			LoadState.INSTALL_STATE, 
 			LoadState.INIT_STATE, 
 			LoadState.RUN_STATE, 
 		};
@@ -107,7 +107,7 @@ public class LoadState {
 		return v != null && v.equals(value);
 	}
 	
-	public void setInfoFile(Map<String, String> file) {
+	public void setInfo(Map<String, String> file) {
 		this.info = file;
 	}
 	

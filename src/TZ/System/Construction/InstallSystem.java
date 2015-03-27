@@ -7,6 +7,8 @@ import javax.swing.JOptionPane;
 import TZ.System.LoadState;
 import TZ.System.Sys;
 import TZ.System.Annotations.Construction;
+import TZ.System.File.CFid;
+import TZ.System.File.InfoFile;
 import TZ.System.Module.Boot;
 import TZ.System.Module.Module;
 
@@ -48,7 +50,13 @@ public class InstallSystem implements InstallSystemConstruction {
 		InstallSystem.construction().isInstallComplete(state, modules, boots);
 	}
 	
-
+	public static CFid base() {
+		return InstallSystem.construction().isBase();
+	}
+	
+	
+	
+	protected String base;
 	
 	public void isInstall(LoadState state, List<Module> modules, List<Boot> boots) {
 		MessageSystem.out("Install system ...");
@@ -82,6 +90,18 @@ public class InstallSystem implements InstallSystemConstruction {
 	@Override
 	public void isInstallSystem(LoadState state, List<Module> modules, List<Boot> boots) {
 		MessageSystem.out("Install system ...");
+		this.base = state.data("path.default") + state.data("program");
+		state.info().put("path.base", this.base);
+		state.info().put("path.default", state.data("path.default"));
+		state.info().put("path.user", state.data("path.user"));
+		CFid fid = new CFid(this.base);
+		InfoFile file = new InfoFile(fid.cDir("user", "defaults").cFile("construction.info"));
+		Boot.forAnnotations(boots, Construction.class, (wrapper) -> {
+			if (wrapper.info().system()) {
+				file.info(wrapper.info().type(), wrapper.info().name());
+			}
+		});
+		file.save();
 		// TODO system install
 		MessageSystem.out("Complete");
 	}
@@ -91,8 +111,18 @@ public class InstallSystem implements InstallSystemConstruction {
 	 */
 	@Override
 	public void isInstallComplete(LoadState state, List<Module> modules, List<Boot> boots) {
+		CFid fid = this.isBase().cFile(state.data("program") + ".info");
+		new InfoFile(fid).infos(state.info()).save();
 		JOptionPane.showMessageDialog(null, "Complete install '" + state.data("program") + "'!");
 		Sys.exit(0);
+	}
+
+	/* 
+	 * @see TZ.System.Construction.InstallSystemConstruction#isBase()
+	 */
+	@Override
+	public CFid isBase() {
+		return new CFid(this.base);
 	}
 
 }

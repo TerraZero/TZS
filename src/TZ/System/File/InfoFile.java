@@ -54,6 +54,13 @@ public class InfoFile {
 		return this;
 	}
 	
+	public InfoFile infos(Map<String, String> infos) {
+		infos.forEach((k, v) -> {
+			this.info(k, v);
+		});
+		return this;
+	}
+	
 	public InfoFile load() {
 		this.load(false);
 		return this;
@@ -96,7 +103,7 @@ public class InfoFile {
 	}
 	
 	public void extend(Fid file) {
-		if (file.isExist()) {
+		if (file != null && file.isExist()) {
 			new InfoFile(file).info().forEach((key, value) -> {
 				this.info(key, value);
 			});;

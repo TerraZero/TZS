@@ -131,7 +131,7 @@ public class SysLoader {
 			if (f.isDirectory()) {
 				this.loadFile(boots, path + "/" + f.getName(), internpath + "/" + f.getName());
 			} else if (f.isFile() && f.getName().endsWith(".class")) {
-				boots.add(new Boot(f, internpath));
+				boots.add(new Boot(f, (internpath.length() == 0 ? "" : internpath.substring(1))));
 			}
 		}
 	}

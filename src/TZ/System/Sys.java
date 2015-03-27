@@ -1,11 +1,13 @@
 package TZ.System;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import TZ.System.Annotations.Construction;
+import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Base.InfoWrapper;
 import TZ.System.Construction.BootSystem;
 import TZ.System.Construction.ExitSystem;
@@ -121,6 +123,7 @@ public class Sys {
 						if (!this.loadstate.dataIs(this.loadstate.current(), "true")) {
 							this.loadstate.data(this.loadstate.current(), "true");
 							this.sysLoad(this.loadstate);
+							this.sysLoadModules(this.loadstate);
 						}
 						break;
 					case LoadState.CONSTRUCTION_STATE :
@@ -129,16 +132,16 @@ public class Sys {
 							this.sysConstruction(this.loadstate);
 						}
 						break;
-					case LoadState.BOOT_STATE :
-						if (!this.loadstate.dataIs(this.loadstate.current(), "true")) {
-							this.loadstate.data(this.loadstate.current(), "true");
-							this.sysBoot(this.loadstate);
-						}
-						break;
 					case LoadState.INSTALL_STATE :
 						if (!this.loadstate.dataIs(this.loadstate.current(), "true")) {
 							this.loadstate.data(this.loadstate.current(), "true");
 							this.sysInstall(this.loadstate);
+						}
+						break;
+					case LoadState.BOOT_STATE :
+						if (!this.loadstate.dataIs(this.loadstate.current(), "true")) {
+							this.loadstate.data(this.loadstate.current(), "true");
+							this.sysBoot(this.loadstate);
 						}
 						break;
 					case LoadState.INIT_STATE :
@@ -150,7 +153,7 @@ public class Sys {
 					case LoadState.RUN_STATE :
 						if (!this.loadstate.dataIs(this.loadstate.current(), "true")) {
 							this.loadstate.data(this.loadstate.current(), "true");
-							
+							this.sysRun(this.loadstate);
 						}
 						break;
 					default :
@@ -186,17 +189,17 @@ public class Sys {
 	}
 	
 	public void sysInfo(LoadState state) {
-		String base = state.data("default-path", SysLoader.defaultPath());
-		String program = state.data("program");
-		String user = state.data("user-path", System.getProperty("user.home"));
-		state.data("start-time", Sys.getTimestamp() + "");
+		String base = state.data("path.default", SysLoader.defaultPath());
+		String program = state.data("program", this.program);
+		String user = state.data("path.user", System.getProperty("user.home"));
+		state.data("time.start", Sys.getTimestamp() + "");
 		
 		Fid fid = Fid.search(this.sysInfoSearch(base, user, program));
 		
 		if (fid != null) {
 			this.info = new InfoFile(fid);
-			state.setInfoFile(info.info());
-			this.sysInfos(state, base);
+			state.setInfo(info.info());
+			this.sysInfos(state, state.info().get("path.base"));
 			state.data("new", "false");
 		} else {
 			state.data("new", "true");
@@ -205,8 +208,8 @@ public class Sys {
 	
 	public void sysInfos(LoadState state, String base) {
 		for (String name : this.sysInfoSearchFile()) {
-			Fid defaultFile = Fid.search(base + "/user/default/" + name + ".info");
-			if (defaultFile.isExist()) {
+			Fid defaultFile = Fid.search(base + "/user/defaults/" + name + ".info");
+			if (defaultFile != null && defaultFile.isExist()) {
 				InfoFile info = new InfoFile(defaultFile, Fid.search(base + "/user/" + name + ".info"));
 				state.infos(name, info.info());
 			}
@@ -215,7 +218,7 @@ public class Sys {
 	
 	public void sysLoad(LoadState state) {
 		if (state.dataIs("new", "false")) {
-			String base = state.info().get("base-path");
+			String base = state.info().get("path.base");
 			
 			for (String name : this.sysInfoSearchFile()) {
 				Fid constructions = new Fid(base, name + "s");
@@ -229,6 +232,14 @@ public class Sys {
 			}
 		}
 		this.boots = SysLoader.sysloader().load();
+	}
+	
+	public void sysLoadModules(LoadState state) {
+		this.modules = new ArrayList<Module>(128);
+		
+		Boot.forAnnotations(boots, Info.class, (wrapper) -> {
+			this.modules.add(new Module(wrapper.value()));
+		});
 	}
 	
 	public void sysConstruction(LoadState state) {
@@ -253,7 +264,6 @@ public class Sys {
 	}
 	
 	public void sysBoot(LoadState state) {
-		this.modules = BootSystem.bootModules(state, this.boots);
 		BootSystem.activeModule(state, this.modules);
 		BootSystem.bootModulesSort(state, this.modules);
 		this.modules = BootSystem.bootModulesDependencies(state, this.modules);
@@ -262,9 +272,10 @@ public class Sys {
 	
 	public void sysInstall(LoadState state) {
 		if (state.dataIs("new", "true")) {
-			InstallSystem.install(state, this.modules, this.boots);
-			InstallSystem.installProfile(state, this.modules, this.boots);
+			state.setInfo(new HashMap<String, String>());
 			InstallSystem.installSystem(state, this.modules, this.boots);
+			InstallSystem.installProfile(state, this.modules, this.boots);
+			InstallSystem.install(state, this.modules, this.boots);
 			InstallSystem.installComplete(state, this.modules, this.boots);
 		}
 	}

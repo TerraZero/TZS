@@ -18,8 +18,6 @@ import TZ.System.Module.Module;
  */
 public interface BootSystemConstruction {
 	
-	public List<Module> bsBootModules(LoadState state, List<Boot> boots);
-	
 	public void bsActiveModule(LoadState state, List<Module> modules);
 	
 	public void bsBootModulesSort(LoadState state, List<Module> modules);

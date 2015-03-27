@@ -10,6 +10,7 @@ import TZ.System.Sys;
 import TZ.System.Annotations.Info;
 import TZ.System.Annotations.Base.AnnotationWrapper;
 import TZ.System.Construction.FileSystem;
+import TZ.System.Construction.InstallSystem;
 import TZ.System.Construction.MessageSystem;
 import TZ.System.File.CFid;
 import TZ.System.File.InfoFile;
@@ -65,7 +66,7 @@ public class Module implements Weighted, AnnotationWrapper<Boot, Info>, Invokeab
 	}
 	
 	public static void installModule(LoadState state, Module module, List<Boot> boots) {
-		CFid base = new CFid(state.data("base-path"));
+		CFid base = InstallSystem.base();
 		base.cDir("user", "defaults").cFile("module.info");
 		MessageSystem.moduleOut(module, "Create module files");
 	}
